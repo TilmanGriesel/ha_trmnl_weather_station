@@ -5,6 +5,8 @@ The primary goal is to visualize data from my Netatmo weather station. The integ
 Currently untested with other brands, but it could be extended to support additional stations with minimal effort.  
 **Note:** This project is still a work in progress.
 
+![demo](https://github.com/TilmanGriesel/ha-trmnl-weather/blob/main/docs/demo/main.png?raw=true)
+
 ---
 
 Inspired by [trmnl-sensor-push](https://github.com/gitstua/trmnl-sensor-push).
