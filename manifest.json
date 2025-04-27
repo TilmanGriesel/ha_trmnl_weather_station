@@ -1,0 +1,14 @@
+{
+  "domain": "trmnl_weather",
+  "name": "TRMNL Weather",
+  "codeowners": ["Tilman Griesel"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/TilmanGriesel/ha-trmnl-weather",
+  "homekit": {},
+  "iot_class": "cloud_push",
+  "requirements": [],
+  "ssdp": [],
+  "version": "0.1.1",
+  "zeroconf": []
+}

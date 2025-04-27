@@ -1,0 +1,225 @@
+<!-- import Highcharts libraries -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/pattern-fill.js"></script>
+
+<style>
+  @import url('https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css');
+
+  .item {
+    padding-bottom: 9px;
+  }
+
+  .trmnl .view--half_vertical::before {
+    background: none;
+  }
+  .weather-icon {
+    margin-right: 0.5rem;
+  }
+</style>
+
+<div class="view view--full">
+
+  <div class="mashup mashup--1Lx1R">
+    <div class="view view--half_vertical">
+      <div class="layout">
+        <div id="co2-gauge"></div>
+      </div>
+    </div>
+
+    <div class="view view--half_vertical">
+      <div class="layout">
+        <div class="grid grid--cols-1">
+          {% for entity in entities %}
+          {% assign val_int = entity.val | plus: 0 %}
+          {% assign full_device_name = devices[0] %}
+          {% if entity.m contains "Module" %}
+          {% assign parts = entity.m | split: "Module " %}
+          {% assign clean_label = parts[1] | strip %}
+          {% else %}
+          {% assign clean_label = entity.m | replace: full_device_name, "" | strip %}
+          {% endif %}
+
+          {% if entity.u contains "°" or (entity.u contains "%" and (entity.m contains "Humidity")) %}
+          <div class="item">
+            <div class="content">
+              <span class="value value--tnums">{{ entity.val }}{{ entity.u }}</span>
+              <span class="label">
+
+                {% if entity.m contains "Temperature" %}
+                <span class="weather-icon mdi mdi-thermometer"></span>
+                {% elsif entity.m contains "Humidity" %}
+                <span class="weather-icon mdi mdi-water-percent"></span>
+                {% else %}
+                <span class="weather-icon mdi mdi-gauge"></span>
+                {% endif %}
+
+                {% if entity.m contains "Outdoor" %} Outdoor {% endif %}
+                {{clean_label}}
+              </span>
+            </div>
+          </div>
+          {% elsif entity.m contains "Battery" and val_int < 10 %}
+            <div class="item">
+              <div class="content">
+                <span class="value value--tnums">{{ entity.val }}{{ entity.u }}</span>
+                <span class="label">
+                  <span class="weather-icon mdi mdi-battery-alert"></span>
+
+                  {% if entity.m contains "Outdoor" %}
+                  Outdoor
+                  {% else %}
+                  {{ entity.m }}
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    // CO2 level in ppm
+    var co2Level = 1200;
+
+    function co2Rating(level) {
+      if (level < 800) {
+        return "Excellent";
+      } else if (level < 1000) {
+        return "Good";
+      } else if (level < 1500) {
+        return "Fair";
+      } else {
+        return "Poor";
+      }
+    }
+
+    function updateWindowWarning(level) {
+      var warningElement = document.getElementById('window_warning');
+      if (level > 1000) {
+        warningElement.innerHTML = "Open Window Recommended";
+      } else {
+        warningElement.innerHTML = "";
+      }
+    }
+
+    function findCO2Entity(entities) {
+      return entities.find(entity => entity.u === "ppm");
+    }
+
+    function createCO2Gauge(level) {    
+      Highcharts.chart('co2-gauge', {
+        chart: {
+          type: "gauge",
+        },
+
+        title: {
+          text: 'CO₂ Level',
+          style: {
+            fontSize: '18px'
+          }
+        },
+
+        pane: {
+          startAngle: -150,
+          endAngle: 150,
+          background: {
+            backgroundColor: "transparent",
+            borderWidth: 0
+          }
+        },
+
+        plotOptions: {
+          gauge: {
+            animation: false,
+            pivot: {
+              backgroundColor: "transparent"
+            },
+            dial: {
+              backgroundColor: "transparent",
+              baseWidth: 0,
+            },
+          }
+        },
+
+        yAxis: {
+          min: 400,
+          max: 2000,
+          minorTickInterval: 0,
+          tickColor: "#ffffff",
+          tickLength: 40,
+          tickPixelInterval: 40,
+          tickWidth: 0,
+          tickPositions: [400, 800, 1200, 1600, 2000],
+          lineWidth: 0,
+          title: {
+            text: co2Rating(level),
+            style: {
+              color: "#000000",
+              fontSize: "24px"
+            }
+          },
+          labels: {
+            distance: 24,
+            style: {
+              fontSize: "16px"
+            }
+          },
+          plotBands: [
+            {
+              from: 400,
+              to: 2000,
+              color: {
+                pattern: {
+                  image: "https://usetrmnl.com/images/grayscale/gray-4.png",
+                  width: 12,
+                  height: 12
+                }
+              },
+              innerRadius: '82%',
+              borderRadius: '50%'
+            },
+            {
+              from: 400,
+              to: level,
+              color: '#000000',
+              innerRadius: "82%",
+              borderRadius: "50%"
+            }
+          ]
+        },
+
+        series: [{
+          name: "CO₂",
+          data: [level],
+          dataLabels: {
+            format: '{point.y} ppm',
+            borderWidth: 0,
+            style: {
+              fontSize: "1.8em",
+            }
+          }
+        }],
+
+        credits: {
+          enabled: false
+        }
+      });
+
+      updateWindowWarning(level);
+    }
+
+    // Get CO2 level
+    {% assign co2Level = -1 %}
+    {% for entity in entities %}
+    {% if entity.u == "ppm" %}
+    {% assign co2Level = entity.val %}
+    {% break %}
+    {% endif %}
+    {% endfor %}
+
+    createCO2Gauge({{ co2Level }});
+  </script>
