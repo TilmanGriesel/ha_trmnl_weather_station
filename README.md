@@ -21,15 +21,16 @@ While the integration is currently developed and tested with the Netatmo Weather
 ### Step 1: Add custom Integration via HACS
 
 1. Open Home Assistant and navigate to **HACS > Integrations**.
-2. Click the three-dot menu (⋮) in the top-right corner and choose **Custom repositories**.
-3. Add this repository URL as a **"Integration"** type.
+1. Click the three-dot menu (⋮) in the top-right corner and choose **Custom repositories**.
+1. Add this repository URL as a **"Integration"** type.
 
 ### Step 2: Install the TRMNL Plugin
 
 1. Go to https://usetrmnl.com/recipes/46862/install
-2. Click `Install`.
-3. Search for `Home Assistant Weather Station` in your playlist and click `Edit` on it.
-4. Click on `Advanced Settings` and copy the `Webhook URL` from the bottom of the edit page, you will need it to setup the Home Assistant integration.
+1. Click `Install`.
+1. Search for `Home Assistant Weather Station` in your playlist and click `Edit` on it.
+1. Set the `Refresh rate` to `Every 15 mins` or to any value that suits you best.
+1. Click on `Advanced Settings` and copy the `Webhook URL` from the bottom of the edit page, you will need it to setup the Home Assistant integration.
 
 ### Step 3: Setup Home Assistant Integration
 After a restart of Home Assistant, this integration is configurable by via "Add Integration" at "Devices & Services" like any core integration. Select `TRMNL Weather Station` and follow the instructions. The `TRMNL Webhook URL` field is the `Webhook URL` you copied earlier.
