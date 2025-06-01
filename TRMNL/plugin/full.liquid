@@ -1,0 +1,148 @@
+<style>
+  @import url('https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css');
+  .item {
+    padding-bottom: 9px;
+  }
+  .trmnl .view--half_vertical::before {
+    background: none;
+  }
+</style>
+<div class="mashup mashup--1Lx1R">
+  <div class="layout">
+    <div id="co2-gauge"></div>
+  </div>
+  <div class="layout">
+    <div class="grid grid--cols-2">
+      {% assign icon_map = 'temperature:mdi-thermometer,humidity:mdi-water-percent,atmospheric_pressure:mdi-gauge,carbon_dioxide:mdi-molecule-co2,wind_speed:mdi-weather-windy,precipitation_intensity:mdi-weather-rainy,battery:mdi-battery,illuminance:mdi-brightness-6,pm25:mdi-air-filter,pm10:mdi-air-filter,aqi:mdi-air-filter,volatile_organic_compounds:mdi-chemical-weapon,nitrogen_dioxide:mdi-molecule,nitrogen_monoxide:mdi-molecule,nitrous_oxide:mdi-molecule,ozone:mdi-shield-sun,sulphur_dioxide:mdi-molecule,default:mdi-gauge' | split: ',' %}
+      {% for entity in entities %}
+      {% if entity.type != 'co2_primary' %}
+      {% assign entity_icon = 'mdi-gauge' %}
+      {% for icon_pair in icon_map %}
+      {% assign icon_data = icon_pair | split: ':' %}
+      {% if icon_data[0] == entity.device_class %}
+      {% assign entity_icon = icon_data[1] %}
+      {% break %}
+      {% endif %}
+      {% endfor %}
+
+      <div class="item">
+        <div class="content">
+          <span class="value value--tnums">
+            {%- if entity.val == "unavailable" -%}
+            -
+            {%- else -%}
+            {{- entity.val -}}{{- entity.u -}}
+            {%- endif -%}
+          </span>
+          <span class="label">
+            <span class="weather-icon mdi {{ entity_icon }}"/>
+              {{ entity.n }}
+            </span>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  function createCO2Gauge(level, maxWidth) {    
+    Highcharts.chart('co2-gauge', {
+      chart: {
+        type: "gauge",
+        width: maxWidth
+      },
+      title: {
+        text: null
+      },
+
+      pane: {
+        startAngle: -150,
+        endAngle: 150,
+        background: {
+          backgroundColor: "transparent",
+          borderWidth: 0
+        }
+      },
+      plotOptions: {
+        gauge: {
+          animation: false,
+          pivot: {
+            backgroundColor: "transparent"
+          },
+          dial: {
+            backgroundColor: "transparent",
+            baseWidth: 0,
+          },
+        }
+      },
+      yAxis: {
+        min: 400,
+        max: 2000,
+        minorTickInterval: 0,
+        tickColor: "#ffffff",
+        tickLength: 40,
+        tickPixelInterval: 40,
+        tickWidth: 0,
+        tickPositions: [400, 800, 1200, 1600, 2000],
+        lineWidth: 0,
+        title: {
+          text: null
+        },
+        title: {
+          text: co2Rating(level),
+          style: {
+            color: "#000000",
+            fontSize: "22px"
+          }
+        },
+        labels: {
+          distance: 24,
+          style: {
+            fontSize: "17px"
+          }
+        },
+        plotBands: [
+          {
+            from: 400,
+            to: 2000,
+            color: {
+              pattern: {
+                image: "https://usetrmnl.com/images/grayscale/gray-5.png",
+                width: 12,
+                height: 12
+              }
+            },
+            innerRadius: '82%',
+            borderRadius: '50%'
+          },
+          {
+            from: 400,
+            to: level,
+            color: '#000000',
+            innerRadius: "82%",
+            borderRadius: "50%"
+          }
+        ]
+      },
+      series: [{
+        name: "CO₂",
+        data: [level],
+        dataLabels: {
+          format: '{point.y} ppm',
+          borderWidth: 0,
+          style: {
+            fontSize: "32px",
+          },
+          y: -20
+        }
+      }],
+      credits: {
+        enabled: false
+      }
+    });
+  }
+
+  createCO2Gauge(getCO2Level());
+</script>

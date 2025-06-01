@@ -1,0 +1,31 @@
+<div class="layout layout--col gap--space-between">
+  <div class="grid grid--cols-3">
+    {% for entity in entities %}
+
+    {% assign entity_icon = 'mdi-gauge' %}
+    {% for icon_pair in icon_map %}
+    {% assign icon_data = icon_pair | split: ':' %}
+    {% if icon_data[0] == entity.device_class %}
+    {% assign entity_icon = icon_data[1] %}
+    {% break %}
+    {% endif %}
+    {% endfor %}
+
+    <div class="item">
+      <div class="content">
+        <span class="value value--small  value--tnums">
+          {%- if entity.val == "unavailable" -%}
+          -
+          {%- else -%}
+          {{- entity.val -}}{{- entity.u -}}
+          {%- endif -%}
+        </span>
+        <span class="label">
+          <span class="weather-icon mdi {{ entity_icon }}"/>
+            {{ entity.n }}
+          </span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
