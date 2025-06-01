@@ -14,7 +14,10 @@ While currently tested only with Netatmo, extending support to other weather sta
 
 **Note:** This project is a work in progress.
 
-![demo](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/demo/main.png?raw=true)
+![product](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/product.png?raw=true)
+
+
+![detail](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/detail.png?raw=true)
 
 ---
 
