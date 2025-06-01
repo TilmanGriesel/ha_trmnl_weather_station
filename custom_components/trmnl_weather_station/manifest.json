@@ -1,13 +1,13 @@
 {
+  "domain": "trmnl_weather_station",
+  "name": "TRMNL Weather Station",
   "codeowners": ["@TilmanGriesel"],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/TilmanGriesel/ha_trmnl_weather_station",
-  "domain": "trmnl_weather_station",
   "integration_type": "service",
   "iot_class": "cloud_push",
   "issue_tracker": "https://github.com/TilmanGriesel/ha_trmnl_weather_station/issues",
-  "name": "TRMNL Weather Station",
   "requirements": ["aiohttp"],
   "version": "0.3.0"
 }
