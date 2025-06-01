@@ -1,7 +1,7 @@
 {
   "domain": "trmnl_weather_station",
   "name": "TRMNL Weather Station",
-  "codeowners": ["Tilman Griesel"],
+  "codeowners": ["@TilmanGriesel"],
   "config_flow": true,
   "documentation": "https://github.com/TilmanGriesel/ha_trmnl_weather_station",
   "iot_class": "cloud_push",
