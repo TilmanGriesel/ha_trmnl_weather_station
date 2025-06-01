@@ -27,9 +27,9 @@ While the integration is currently developed and tested with the Netatmo Weather
 ### Step 2: Install the TRMNL Plugin
 
 1. Go to https://usetrmnl.com/recipes/46862/install
-2. Click **Install**.
+2. Click `Install`.
 3. Search for `Home Assistant Weather Station` in your playlist and click `Edit` on it.
-4. Copy the `Webhook URL` from the bottom of the edit page, you will need it to setup the Home Assistant integration.
+4. Click on `Advanced Settings` and copy the `Webhook URL` from the bottom of the edit page, you will need it to setup the Home Assistant integration.
 
 ### Step 3: Setup Home Assistant Integration
 After a restart of Home Assistant, this integration is configurable by via "Add Integration" at "Devices & Services" like any core integration. Select `TRMNL Weather Station` and follow the instructions. The `TRMNL Webhook URL` field is the `Webhook URL` you copied earlier.
