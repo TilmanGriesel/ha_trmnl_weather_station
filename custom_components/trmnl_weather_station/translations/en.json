@@ -3,78 +3,86 @@
     "step": {
       "user": {
         "title": "TRMNL Weather Station Setup",
-        "description": "Configure sensors for TRMNL display. Requires 1 CO₂ sensor + up to 4 others.",
+        "description": "**Step 1 of 2: Basic Configuration**\n\nConfigure the essential settings for your TRMNL display. You'll need your webhook URL and a CO₂ sensor.",
         "data": {
-          "url": "Webhook URL",
-          "co2_sensor": "CO₂ Sensor",
-          "co2_name": "CO₂ Label",
-          "sensor_1": "Sensor 1",
-          "sensor_1_name": "Label 1",
-          "sensor_2": "Sensor 2",
-          "sensor_2_name": "Label 2",
-          "sensor_3": "Sensor 3",
-          "sensor_3_name": "Label 3",
-          "sensor_4": "Sensor 4",
-          "sensor_4_name": "Label 4",
-          "update_interval": "Update Interval (sec)"
+          "url": "TRMNL Webhook URL",
+          "co2_sensor": "CO₂ Sensor (Required)",
+          "co2_name": "CO₂ Display Name",
+          "update_interval": "Update Frequency"
         },
         "data_description": {
-          "url": "TRMNL dashboard webhook URL",
-          "co2_sensor": "Air quality CO₂ sensor",
-          "co2_name": "Display label (e.g. 'Office', 'Main')",
-          "sensor_1": "Weather station sensor",
-          "sensor_1_name": "Display label",
-          "sensor_2": "Weather station sensor",
-          "sensor_2_name": "Display label",
-          "sensor_3": "Weather station sensor",
-          "sensor_3_name": "Display label",
-          "sensor_4": "Weather station sensor",
-          "sensor_4_name": "Display label",
-          "update_interval": "Update frequency (5min - 24hrs)"
+          "url": "Your TRMNL webhook URL (starts with https://)",
+          "co2_sensor": "Select your air quality CO₂ sensor from available sensors",
+          "co2_name": "Name to display on TRMNL (e.g., 'Office CO₂', 'Living Room')",
+          "update_interval": "How often to send data to TRMNL in seconds"
+        }
+      },
+      "sensors": {
+        "title": "Additional Weather Sensors",
+        "description": "**Step 2 of 2: Optional Sensors**\n\nAdd up to 4 additional weather sensors (temperature, humidity, pressure, etc.). All sensors in this step are optional - you can skip any you don't need.",
+        "data": {
+          "sensor_1": "Weather Sensor 1",
+          "sensor_1_name": "Sensor 1 Name",
+          "sensor_2": "Weather Sensor 2",
+          "sensor_2_name": "Sensor 2 Name",
+          "sensor_3": "Weather Sensor 3",
+          "sensor_3_name": "Sensor 3 Name",
+          "sensor_4": "Weather Sensor 4",
+          "sensor_4_name": "Sensor 4 Name"
+        },
+        "data_description": {
+          "sensor_1": "Optional: Select a temperature, humidity, or other weather sensor",
+          "sensor_1_name": "Display name for sensor 1",
+          "sensor_2": "Optional: Select a temperature, humidity, or other weather sensor",
+          "sensor_2_name": "Display name for sensor 2",
+          "sensor_3": "Optional: Select a temperature, humidity, or other weather sensor",
+          "sensor_3_name": "Display name for sensor 3",
+          "sensor_4": "Optional: Select a temperature, humidity, or other weather sensor",
+          "sensor_4_name": "Display name for sensor 4"
         }
       }
     },
     "error": {
-      "invalid_url": "Invalid URL. Must start with http:// or https://",
-      "cannot_connect": "Can't connect to TRMNL. Check URL.",
-      "unknown": "Setup error occurred."
+      "invalid_url": "Invalid URL format. Must start with http:// or https://",
+      "cannot_connect": "Unable to connect to TRMNL. Please check your webhook URL.",
+      "unknown": "An unexpected error occurred during setup. Please try again."
     },
     "abort": {
-      "already_configured": "Already configured for this URL."
+      "already_configured": "TRMNL Weather Station is already configured for this webhook URL."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "TRMNL Weather Options",
-        "description": "Update sensor settings.",
+        "title": "TRMNL Weather Configuration",
+        "description": "**Update Your Settings**\n\nModify your TRMNL Weather Station configuration. You can change sensors, display names, or update frequency.",
         "data": {
-          "url": "Webhook URL",
+          "url": "TRMNL Webhook URL",
           "co2_sensor": "CO₂ Sensor",
-          "co2_name": "CO₂ Label",
-          "sensor_1": "Sensor 1",
-          "sensor_1_name": "Label 1",
-          "sensor_2": "Sensor 2",
-          "sensor_2_name": "Label 2",
-          "sensor_3": "Sensor 3",
-          "sensor_3_name": "Label 3",
-          "sensor_4": "Sensor 4",
-          "sensor_4_name": "Label 4",
-          "update_interval": "Update Interval (sec)"
+          "co2_name": "CO₂ Display Name",
+          "sensor_1": "Weather Sensor 1",
+          "sensor_1_name": "Display Name 1",
+          "sensor_2": "Weather Sensor 2",
+          "sensor_2_name": "Display Name 2",
+          "sensor_3": "Weather Sensor 3",
+          "sensor_3_name": "Display Name 3",
+          "sensor_4": "Weather Sensor 4",
+          "sensor_4_name": "Display Name 4",
+          "update_interval": "Update Frequency"
         },
         "data_description": {
-          "url": "TRMNL dashboard webhook URL",
-          "co2_sensor": "Air quality CO₂ sensor",
-          "co2_name": "Display label (e.g. 'Office CO₂')",
-          "sensor_1": "Weather station sensor",
-          "sensor_1_name": "Display label (e.g. 'Indoor')",
-          "sensor_2": "Weather station sensor",
-          "sensor_2_name": "Display label (e.g. 'Outdoor')",
-          "sensor_3": "Weather station sensor",
-          "sensor_3_name": "Display label (e.g. 'Bedroom')",
-          "sensor_4": "Weather station sensor",
-          "sensor_4_name": "Display label (e.g. 'Wind')",
-          "update_interval": "Update frequency (5min - 24hrs)"
+          "url": "Current: {current_url}",
+          "co2_sensor": "Current: {current_co2}",
+          "co2_name": "Name shown on TRMNL display",
+          "sensor_1": "Optional weather sensor",
+          "sensor_1_name": "Display name (leave empty to use sensor name)",
+          "sensor_2": "Optional weather sensor",
+          "sensor_2_name": "Display name (leave empty to use sensor name)",
+          "sensor_3": "Optional weather sensor",
+          "sensor_3_name": "Display name (leave empty to use sensor name)",
+          "sensor_4": "Optional weather sensor",
+          "sensor_4_name": "Display name (leave empty to use sensor name)",
+          "update_interval": "Current: {current_interval} minutes"
         }
       }
     }
