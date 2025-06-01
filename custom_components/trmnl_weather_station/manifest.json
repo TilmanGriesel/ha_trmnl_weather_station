@@ -1,14 +1,9 @@
 {
-  "domain": "trmnl_weather",
-  "name": "TRMNL Weather",
+  "domain": "trmnl_weather_station",
+  "name": "TRMNL Weather Station",
   "codeowners": ["Tilman Griesel"],
   "config_flow": true,
-  "dependencies": [],
-  "documentation": "https://github.com/TilmanGriesel/ha-trmnl-weather",
-  "homekit": {},
+  "documentation": "https://github.com/TilmanGriesel/ha_trmnl_weather_station",
   "iot_class": "cloud_push",
-  "requirements": [],
-  "ssdp": [],
-  "version": "0.1.1",
-  "zeroconf": []
+  "version": "0.2.0"
 }
