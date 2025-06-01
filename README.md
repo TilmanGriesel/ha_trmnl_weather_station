@@ -13,7 +13,37 @@ While the integration is currently developed and tested with the Netatmo Weather
 ![product](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/product.png?raw=true)
 
 
-**Note:** This project is currently under development; feel free to call this project THAWS.
+## Setup Instructions
+
+> ⚠️ This project is currently under development, so installation is a bit manual for now. Full documentation and streamlined setup will follow once it's available in the official HACS and TRMNL Plugin directories.
+
+
+### Step 1: Add custom Integration via HACS
+
+1. Open Home Assistant and navigate to **HACS > Integrations**.
+2. Click the three-dot menu (⋮) in the top-right corner and choose **Custom repositories**.
+3. Add this repository URL as a **"Integration"** type.
+
+### Step 2: Install the TRMNL Plugin
+
+1. Go to https://usetrmnl.com/recipes/46862/install
+2. Click **Install**.
+3. Search for `Home Assistant Weather Station` in your playlist and click `Edit` on it.
+4. Copy the `Webhook URL` from the bottom of the edit page, you will need it to setup the Home Assistant integration.
+
+### Step 3: Setup Home Assistant Integration
+After a restart of Home Assistant, this integration is configurable by via "Add Integration" at "Devices & Services" like any core integration. Select `TRMNL Weather Station` and follow the instructions. The `TRMNL Webhook URL` field is the `Webhook URL` you copied earlier.
+
+![setup_speedrun](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/setup/ha_setup_speedrun.gif?raw=true)
+
+---
+
+### Future Plans
+
+* Publish the integration in the official **HACS** directory.
+* Refactor and clean up the codebase, simplifying where possible and expanding configuration options as needed.
+* Add automated tests and refactor logic into classes to improve maintainability and structure.
+* Expand and dynamically adapt TRMNL display output based on sensor input.
 
 ---
 
