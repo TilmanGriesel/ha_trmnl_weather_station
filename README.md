@@ -1,4 +1,4 @@
-# TRMNL Home Assistant Weather Station 
+# TRMNL Home Assistant Weather Station
 
 Use your **TRMNL** display to monitor **live CO₂ levels and up to four custom weather sensors** from your **Netatmo** or other supported stations.
 
