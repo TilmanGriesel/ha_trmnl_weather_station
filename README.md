@@ -1,4 +1,4 @@
-**Home Assistant Weather Integration for TRMNL**
+# Home Assistant Weather Integration for TRMNL
 
 This integration is available as a HACS plugin, alongside the TRMNL E-Ink display plugin.
 Its primary purpose is to visualize data from a Netatmo weather station.
