@@ -41,7 +41,7 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, str]:
     if not data[CONF_URL].startswith(("http://", "https://")):
         raise InvalidURL
 
-    title_parts = ["TRMNL Weather"]
+    title_parts = ["TRMNL Weather Station"]
 
     if data.get(CONF_STATION_KEYWORD) != DEFAULT_STATION_KEYWORD:
         title_parts.append(data[CONF_STATION_KEYWORD].capitalize())

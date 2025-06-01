@@ -1,6 +1,6 @@
 """Constants for the TRMNL Weather Station Push integration."""
 
-DOMAIN = "trmnl_weather"
+DOMAIN = "trmnl_weather_station"
 CONF_URL = "url"
 CONF_PRIORITY_SENSORS = "priority_sensors"
 CONF_STATION_KEYWORD = "station_keyword"
