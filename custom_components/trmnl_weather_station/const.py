@@ -13,7 +13,7 @@ CONF_SENSOR_3_NAME = "sensor_3_name"  # Custom name for sensor 3
 CONF_SENSOR_4 = "sensor_4"
 CONF_SENSOR_4_NAME = "sensor_4_name"  # Custom name for sensor 4
 
-DEFAULT_URL = "https://usetrmnl.com/api/custom_plugins/XXXX-XXXX-XXXX-XXXX"
+DEFAULT_URL = ""
 MIN_TIME_BETWEEN_UPDATES = 1800  # 30 minutes
 
 # API limit for TRMNL
