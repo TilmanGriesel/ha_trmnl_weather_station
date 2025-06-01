@@ -3,10 +3,10 @@
   "name": "TRMNL Weather Station",
   "codeowners": ["@TilmanGriesel"],
   "config_flow": true,
-  "documentation": "https://github.com/TilmanGriesel/ha_trmnl_weather_station",
-  "iot_class": "cloud_push",
-  "version": "0.3.0",
-  "requirements": ["aiohttp"],
   "dependencies": [],
-  "integration_type": "service"
+  "documentation": "https://github.com/TilmanGriesel/ha_trmnl_weather_station",
+  "integration_type": "service",
+  "iot_class": "cloud_push",
+  "requirements": ["aiohttp"],
+  "version": "0.3.0"
 }
