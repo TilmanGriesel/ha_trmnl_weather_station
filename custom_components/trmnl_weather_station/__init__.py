@@ -19,17 +19,18 @@ from homeassistant.helpers import device_registry as dr
 from .const import (
     DOMAIN,
     CONF_URL,
+    CONF_CO2_SENSOR,
+    CONF_CO2_NAME,
+    CONF_SENSOR_1,
+    CONF_SENSOR_1_NAME,
+    CONF_SENSOR_2,
+    CONF_SENSOR_2_NAME,
+    CONF_SENSOR_3,
+    CONF_SENSOR_3_NAME,
+    CONF_SENSOR_4,
+    CONF_SENSOR_4_NAME,
     MIN_TIME_BETWEEN_UPDATES,
-    DEFAULT_WEATHER_DOMAINS,
-    PRIORITY_SENSORS,
-    TOP_PRIORITY_SENSORS,
     MAX_PAYLOAD_SIZE,
-    CONF_STATION_KEYWORD,
-    DEFAULT_STATION_KEYWORD,
-    CONF_PRIMARY_CO2,
-    CONF_DEVICES,
-    CONF_INCLUDE_OUTDOOR,
-    OUTDOOR_KEYWORDS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -37,55 +38,53 @@ _LOGGER = logging.getLogger(__name__)
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
-def create_compact_entity_payload(state) -> dict:
-    """Create a compact payload for a single weather entity."""
-    # Extract the sensor type
+def create_entity_payload(state, sensor_type="additional", custom_name=None) -> dict:
+    """Create a payload for a single sensor entity."""
+    if not state:
+        return None
+
     entity_parts = state.entity_id.split(".")
     if len(entity_parts) < 2:
         return None
 
     entity_name = entity_parts[1]
+    friendly_name = state.attributes.get("friendly_name", "")
 
-    # Basic payload with minimal data
+    # Basic payload
     payload = {
         "id": entity_name,
         "val": state.state,
+        "type": sensor_type,
     }
 
-    # Add unit if available (using short key)
+    # Add unit if available
     if "unit_of_measurement" in state.attributes:
         payload["u"] = state.attributes.get("unit_of_measurement")
 
-    # Add human-readable name (if different from entity_id)
-    if "friendly_name" in state.attributes:
-        friendly_name = state.attributes.get("friendly_name")
-        if friendly_name and friendly_name != entity_name:
-            # Only include abbreviated module name to save space
-            if "module_name" in state.attributes:
-                module_name = state.attributes.get("module_name")
-                # Just use the first word of the module name to save some space
-                if module_name and " " in module_name:
-                    payload["m"] = module_name.split(" ")[0]
-                else:
-                    payload["m"] = module_name
-            else:
-                # Use friendly name if no module name
-                payload["m"] = friendly_name
+    # Use custom name if provided, otherwise clean up the friendly name
+    if custom_name and custom_name.strip():
+        payload["n"] = custom_name.strip()
+    elif friendly_name:
+        # Clean up the name - remove common prefixes/suffixes
+        clean_name = friendly_name
+        for word in ["sensor", "Sensor", "Module", "module"]:
+            clean_name = clean_name.replace(word, "").strip()
+        payload["n"] = clean_name
+    else:
+        payload["n"] = entity_name.replace("_", " ").title()
 
-    # Add battery only if it's low (<25%)
+    # Add battery status if low
     if "battery_percent" in state.attributes:
         battery = state.attributes.get("battery_percent")
         if battery is not None and float(battery) < 25:
-            payload["bat"] = battery
+            payload["battery"] = battery
 
-    # Skip signal strength to save space unless critical
-    if "rf_status" in state.attributes:
-        rf_status = state.attributes.get("rf_status")
-        if rf_status is not None and float(rf_status) < 30:
-            payload["sig"] = rf_status
+    # Add device class for better categorization
+    if "device_class" in state.attributes:
+        payload["device_class"] = state.attributes.get("device_class")
 
     _LOGGER.debug(
-        "TRMNL Weather: Created compact payload for %s: %s", state.entity_id, payload
+        "Created payload for %s (%s): %s", state.entity_id, sensor_type, payload
     )
     return payload
 
@@ -95,387 +94,233 @@ def estimate_payload_size(payload):
     return len(json.dumps(payload))
 
 
-def is_priority_sensor(entity_id):
-    """Check if an entity represents a priority sensor type."""
-    # Check top priority sensors first (CO2, Temperature, Humidity)
-    for i, sensor_type in enumerate(TOP_PRIORITY_SENSORS):
-        if sensor_type in entity_id:
-            return True, i
-
-    # Then check the rest of priority sensors
-    for i, sensor_type in enumerate(
-        PRIORITY_SENSORS[len(TOP_PRIORITY_SENSORS) :], len(TOP_PRIORITY_SENSORS)
-    ):
-        if sensor_type in entity_id:
-            return True, i
-
-    return False, len(PRIORITY_SENSORS)
-
-
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    _LOGGER.debug("TRMNL Weather: Setting up TRMNL Weather Push component")
+    """Set up the TRMNL Weather component."""
+    _LOGGER.debug("Setting up TRMNL Weather Push component")
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    _LOGGER.debug("TRMNL Weather: Setting up config entry")
+    """Set up TRMNL Weather from a config entry."""
+    _LOGGER.debug("Setting up TRMNL Weather config entry")
 
     try:
         hass.data.setdefault(DOMAIN, {})
         hass.data[DOMAIN][entry.entry_id] = {}
 
-        # Get configuration values with defaults
-        url = entry.data.get(CONF_URL)
+        # Get configuration from both data and options (options take priority)
+        config = {**entry.data, **entry.options}
+
+        url = config.get(CONF_URL)
+        co2_sensor = config.get(CONF_CO2_SENSOR)
+        co2_name = config.get(CONF_CO2_NAME)
+        sensor_1 = config.get(CONF_SENSOR_1)
+        sensor_1_name = config.get(CONF_SENSOR_1_NAME)
+        sensor_2 = config.get(CONF_SENSOR_2)
+        sensor_2_name = config.get(CONF_SENSOR_2_NAME)
+        sensor_3 = config.get(CONF_SENSOR_3)
+        sensor_3_name = config.get(CONF_SENSOR_3_NAME)
+        sensor_4 = config.get(CONF_SENSOR_4)
+        sensor_4_name = config.get(CONF_SENSOR_4_NAME)
+        update_interval = config.get("update_interval", MIN_TIME_BETWEEN_UPDATES)
+
         if not url:
-            _LOGGER.error("TRMNL Weather: No URL configured, cannot set up integration")
+            _LOGGER.error("No URL configured, cannot set up integration")
             return False
 
-        station_keyword = entry.data.get(CONF_STATION_KEYWORD, DEFAULT_STATION_KEYWORD)
-        selected_devices = entry.data.get(CONF_DEVICES, [])
-        include_outdoor = entry.data.get(CONF_INCLUDE_OUTDOOR, True)
-        primary_co2_filter = entry.data.get(
-            CONF_PRIMARY_CO2, ""
-        ).strip()  # TODO: Remove primary_co2_filter
+        if not co2_sensor:
+            _LOGGER.error("No CO2 sensor configured, cannot set up integration")
+            return False
 
         _LOGGER.debug(
-            "TRMNL Weather: Using webhook URL: %s, station keyword: %s, "
-            "selected devices: %s, include outdoor: %s, primary CO2 filter: %s",
+            "Configuration - URL: %s, CO2: %s (%s), Sensors: [%s (%s), %s (%s), %s (%s), %s (%s)], Interval: %ds",
             url,
-            station_keyword,
-            selected_devices,
-            include_outdoor,
-            primary_co2_filter,
+            co2_sensor,
+            co2_name,
+            sensor_1,
+            sensor_1_name,
+            sensor_2,
+            sensor_2_name,
+            sensor_3,
+            sensor_3_name,
+            sensor_4,
+            sensor_4_name,
+            update_interval,
         )
 
     except Exception as ex:
-        _LOGGER.exception("TRMNL Weather: Error setting up integration: %s", ex)
+        _LOGGER.exception("Error setting up integration: %s", ex)
         return False
 
-    def get_weather_station_entities():
-        """Get all Weather Station entities prioritized by importance."""
-        _LOGGER.debug("TRMNL Weather: Finding Weather Station entities")
-        all_entities = []
+    async def process_sensors(*_):
+        """Process and send sensor data to TRMNL."""
+        _LOGGER.debug("Starting sensor data processing")
 
-        domains_to_check = DEFAULT_WEATHER_DOMAINS.copy()
-        if station_keyword and station_keyword not in domains_to_check:
-            domains_to_check.append(station_keyword)
-
-        entity_registry = async_get_entity_registry(hass)
-        device_registry = dr.async_get(hass)
-
-        _LOGGER.debug("TRMNL Weather: Selected devices: %s", selected_devices)
-
-        for entity_id in hass.states.async_entity_ids():
-            if any(domain in entity_id for domain in domains_to_check):
-                state = hass.states.get(entity_id)
-                if state:
-                    if entity_id.startswith(("sensor.", "binary_sensor.")):
-                        entity_entry = entity_registry.async_get(entity_id)
-
-                        should_include = False
-
-                        _LOGGER.debug(
-                            "TRMNL Weather: Processing entity %s for device matching",
-                            entity_id,
-                        )
-
-                        if entity_entry and entity_entry.device_id:
-                            _LOGGER.debug(
-                                "TRMNL Weather: Entity %s has device_id: %s (selected devices: %s)",
-                                entity_id,
-                                entity_entry.device_id,
-                                selected_devices,
-                            )
-
-                            if not selected_devices:
-                                should_include = True
-                                _LOGGER.debug(
-                                    "TRMNL Weather: OK - Including %s - no specific devices selected",
-                                    entity_id,
-                                )
-                            elif entity_entry.device_id in selected_devices:
-                                should_include = True
-
-                                device = device_registry.async_get(
-                                    entity_entry.device_id
-                                )
-                                device_name = (
-                                    device.name if device else "Unknown device"
-                                )
-
-                                _LOGGER.debug(
-                                    "TRMNL Weather: OK - Including %s - matched with selected device %s (%s)",
-                                    entity_id,
-                                    entity_entry.device_id,
-                                    device_name,
-                                )
-                            else:
-                                _LOGGER.debug(
-                                    "TRMNL Weather: NOOP - Not including %s - device %s not in selected devices",
-                                    entity_id,
-                                    entity_entry.device_id,
-                                )
-                        else:
-                            if entity_entry:
-                                _LOGGER.debug(
-                                    "TRMNL Weather: Entity %s has no device_id assigned",
-                                    entity_id,
-                                )
-                            else:
-                                _LOGGER.debug(
-                                    "TRMNL Weather: Entity %s not found in entity registry",
-                                    entity_id,
-                                )
-
-                        if not selected_devices and not should_include:
-                            should_include = True
-                            _LOGGER.debug(
-                                "TRMNL Weather: No devices are selected. Including entity %s by default.",
-                                entity_id,
-                            )
-
-                        # If user wants to always include outdoor devices
-                        if include_outdoor and not should_include:
-                            entity_name = entity_id.lower()
-                            friendly_name = state.attributes.get(
-                                "friendly_name", ""
-                            ).lower()
-
-                            for keyword in OUTDOOR_KEYWORDS:
-                                if keyword in entity_name or keyword in friendly_name:
-                                    should_include = True
-                                    _LOGGER.debug(
-                                        "TRMNL Weather: OK - Including outdoor sensor %s (matched keyword: %s)",
-                                        entity_id,
-                                        keyword,
-                                    )
-                                    break
-
-                            if not should_include:
-                                _LOGGER.debug(
-                                    "TRMNL Weather: NOOP - Not including %s - not matching any outdoor keywords",
-                                    entity_id,
-                                )
-
-                        # Include entity if it passed filters
-                        if should_include:
-                            all_entities.append(entity_id)
-                        else:
-                            _LOGGER.debug(
-                                "TRMNL Weather: NOOP - Not including %s - did not pass any inclusion filters",
-                                entity_id,
-                            )
-
-        # Ensure TOP_PRIORITY_SENSORS come first
-        def enhanced_priority_sort_key(entity_id):
-            state = hass.states.get(entity_id)
-
-            # First check for primary CO2 filter
-            if (
-                primary_co2_filter
-                and TOP_PRIORITY_SENSORS[0] in entity_id
-                and primary_co2_filter.lower() in entity_id.lower()
-            ):  # TODO: Remove primary_co2_filter
-                return (-1, entity_id)
-
-            for i, sensor_type in enumerate(TOP_PRIORITY_SENSORS):
-                if sensor_type in entity_id:
-                    return (i, entity_id)
-
-            is_priority, priority_idx = is_priority_sensor(entity_id)
-            if is_priority:
-                return (priority_idx, entity_id)
-            else:
-                return (999, entity_id)  # Non-priority sensors last
-
-        all_entities.sort(key=enhanced_priority_sort_key)
-
-        _LOGGER.debug(
-            "TRMNL Weather: Found entities in priority order: %s", all_entities
-        )
-        return all_entities
-
-    async def process_weather_station_entities(*_):
-        """Process Weather Station entities efficiently."""
-        _LOGGER.debug("TRMNL Weather: Starting entity processing")
-
-        weather_entities = get_weather_station_entities()
-        if len(weather_entities) == 0:
-            _LOGGER.error("TRMNL Weather: No Weather Station entities found")
-            return
-
-        _LOGGER.info(
-            "TRMNL Weather: Found %d Weather Station entities", len(weather_entities)
-        )
+        # Get current configuration (in case it was updated)
+        current_config = {**entry.data, **entry.options}
+        current_url = current_config.get(CONF_URL)
+        current_co2_sensor = current_config.get(CONF_CO2_SENSOR)
+        current_co2_name = current_config.get(CONF_CO2_NAME)
+        current_sensor_1 = current_config.get(CONF_SENSOR_1)
+        current_sensor_1_name = current_config.get(CONF_SENSOR_1_NAME)
+        current_sensor_2 = current_config.get(CONF_SENSOR_2)
+        current_sensor_2_name = current_config.get(CONF_SENSOR_2_NAME)
+        current_sensor_3 = current_config.get(CONF_SENSOR_3)
+        current_sensor_3_name = current_config.get(CONF_SENSOR_3_NAME)
+        current_sensor_4 = current_config.get(CONF_SENSOR_4)
+        current_sensor_4_name = current_config.get(CONF_SENSOR_4_NAME)
 
         entities_payload = []
-        included_count = 0
-        current_size = 0
 
-        included_types = {sensor_type: 0 for sensor_type in TOP_PRIORITY_SENSORS}
-        included_types["other"] = 0
-
-        base_payload_size = estimate_payload_size(
-            {
-                "merge_variables": {
-                    "entities": [],
-                    "timestamp": datetime.now().isoformat(),
-                    "source": station_keyword,
-                }
-            }
-        )
-
-        available_size = (
-            MAX_PAYLOAD_SIZE - base_payload_size - 100
-        )  # 100 bytes buffer for base payload
-
-        for entity_id in weather_entities:
-
-            state = hass.states.get(entity_id)
-            if state:
-                _LOGGER.debug("TRMNL Weather: Processing entity: %s", entity_id)
-                entity_payload = create_compact_entity_payload(state)
-
-                if entity_payload:
-                    entity_size = estimate_payload_size(entity_payload)
-                    if current_size + entity_size <= available_size:
-                        entities_payload.append(entity_payload)
-                        current_size += entity_size
-                        included_count += 1
-
-                        # Track included sensor types
-                        sensor_matched = False
-                        for sensor_type in TOP_PRIORITY_SENSORS:
-                            if sensor_type in entity_id:
-                                included_types[sensor_type] += 1
-                                sensor_matched = True
-
-                                # Add special flag for primary CO2 sensor # TODO: Remove primary_co2_filter
-                                if (
-                                    sensor_type == TOP_PRIORITY_SENSORS[0]
-                                    and primary_co2_filter
-                                    and primary_co2_filter.lower() in entity_id.lower()
-                                ):
-                                    entity_payload["primary"] = True
-                                break
-
-                        if not sensor_matched:
-                            included_types["other"] += 1
-
-                        _LOGGER.debug(
-                            "TRMNL Weather: Added entity (size: %d bytes, total: %d bytes)",
-                            entity_size,
-                            current_size,
-                        )
-                    else:
-                        _LOGGER.debug(
-                            "TRMNL Weather: Skipping entity %s - would exceed size limit",
-                            entity_id,
-                        )
-
-        _LOGGER.info(
-            "TRMNL Weather: Included %d out of %d entities (payload size: ~%d bytes)",
-            included_count,
-            len(weather_entities),
-            current_size + base_payload_size,
-        )
-
-        log_parts = ["TRMNL Weather: Sensor type breakdown -"]
-        for sensor_type in TOP_PRIORITY_SENSORS:
-            formatted_name = sensor_type.replace("_", " ").capitalize()
-            log_parts.append(f"{formatted_name}: {included_types[sensor_type]}")
-        log_parts.append(f"Other: {included_types['other']}")
-
-        _LOGGER.info(" ".join(log_parts))
-
-        # Send to TRMNL webhook (if we have entities)
-        if entities_payload:
-            timestamp = datetime.now().isoformat()
-            payload = {
-                "merge_variables": {
-                    "entities": entities_payload,
-                    "timestamp": timestamp,
-                    "source": station_keyword,
-                    "count": included_count,
-                }
-            }
-
-            # Add device information if devices are selected
-            if selected_devices:
-                device_reg = dr.async_get(hass)
-                device_names = []
-
-                for device_id in selected_devices:
-                    device = device_reg.async_get(device_id)
-                    if device and device.name:
-                        device_names.append(device.name)
-
-                if device_names:
-                    payload["merge_variables"]["devices"] = device_names
-
-            final_size = estimate_payload_size(payload)
-            _LOGGER.debug("TRMNL Weather: Final payload size: %d bytes", final_size)
-
-            if final_size > MAX_PAYLOAD_SIZE:
-                _LOGGER.error(
-                    "TRMNL Weather: Payload exceeds 2KB limit (%d bytes). Trimming payload.",
-                    final_size,
-                )
-                # Remove entities until under the size limit
-                while final_size > MAX_PAYLOAD_SIZE and entities_payload:
-                    entities_payload.pop()
-                    payload["merge_variables"]["entities"] = entities_payload
-                    payload["merge_variables"]["count"] = len(entities_payload)
-                    final_size = estimate_payload_size(payload)
-
+        # Get CO2 sensor (required - marked as primary)
+        co2_state = hass.states.get(current_co2_sensor) if current_co2_sensor else None
+        if co2_state:
+            co2_payload = create_entity_payload(
+                co2_state, sensor_type="co2_primary", custom_name=current_co2_name
+            )
+            if co2_payload:
+                co2_payload["primary"] = True  # Mark CO2 as primary sensor
+                entities_payload.append(co2_payload)
                 _LOGGER.debug(
-                    "TRMNL Weather: Trimmed payload size: %d bytes with %d entities",
-                    final_size,
-                    len(entities_payload),
+                    "Added CO2 sensor (primary): %s with name '%s'",
+                    current_co2_sensor,
+                    co2_payload.get("n"),
                 )
-
-            try:
-                async with aiohttp.ClientSession() as session:
-                    _LOGGER.debug("TRMNL Weather: Sending POST request to %s", url)
-                    async with session.post(url, json=payload) as response:
-                        if response.status == 200:
-                            _LOGGER.info(
-                                "TRMNL Weather: Successfully sent data to webhook"
-                            )
-                            _LOGGER.debug(
-                                "TRMNL Weather: Webhook response: %s",
-                                await response.text(),
-                            )
-                        else:
-                            _LOGGER.error(
-                                "TRMNL Weather: Error sending to webhook: %s",
-                                response.status,
-                            )
-                            response_text = await response.text()
-                            _LOGGER.error("TRMNL Weather: Response: %s", response_text)
-            except Exception as err:
-                _LOGGER.error("TRMNL Weather: Failed to send data to webhook: %s", err)
         else:
-            _LOGGER.debug("TRMNL Weather: No entities to send")
+            _LOGGER.warning("CO2 sensor %s not found", current_co2_sensor)
+            return  # Don't send anything if CO2 sensor is missing
 
-    update_interval = entry.data.get("update_interval", MIN_TIME_BETWEEN_UPDATES)
+        # Get additional sensors (1-4)
+        additional_sensors = [
+            (current_sensor_1, current_sensor_1_name, "sensor_1"),
+            (current_sensor_2, current_sensor_2_name, "sensor_2"),
+            (current_sensor_3, current_sensor_3_name, "sensor_3"),
+            (current_sensor_4, current_sensor_4_name, "sensor_4"),
+        ]
 
-    # Timer config
-    _LOGGER.debug(
-        "TRMNL Weather: Setting up periodic timer for %d seconds", update_interval
-    )
+        for sensor_id, custom_name, sensor_label in additional_sensors:
+            if sensor_id:
+                sensor_state = hass.states.get(sensor_id)
+                if sensor_state:
+                    sensor_payload = create_entity_payload(
+                        sensor_state, sensor_type=sensor_label, custom_name=custom_name
+                    )
+                    if sensor_payload:
+                        entities_payload.append(sensor_payload)
+                        _LOGGER.debug(
+                            "Added %s: %s with name '%s'",
+                            sensor_label,
+                            sensor_id,
+                            sensor_payload.get("n"),
+                        )
+                else:
+                    _LOGGER.warning("Sensor %s (%s) not found", sensor_label, sensor_id)
+
+        if not entities_payload:
+            _LOGGER.error("No valid sensor data to send")
+            return
+
+        # Create final payload
+        timestamp = datetime.now().isoformat()
+        payload = {
+            "merge_variables": {
+                "entities": entities_payload,
+                "timestamp": timestamp,
+                "count": len(entities_payload),
+                "co2_value": co2_state.state if co2_state else None,
+                "co2_unit": (
+                    co2_state.attributes.get("unit_of_measurement", "ppm")
+                    if co2_state
+                    else "ppm"
+                ),
+            }
+        }
+
+        # Check payload size
+        final_size = estimate_payload_size(payload)
+        _LOGGER.debug(
+            "Payload size: %d bytes (%d entities)", final_size, len(entities_payload)
+        )
+
+        if final_size > MAX_PAYLOAD_SIZE:
+            _LOGGER.warning(
+                "Payload exceeds 2KB limit (%d bytes). Trimming...", final_size
+            )
+
+            # Always keep CO2 sensor (primary)
+            essential_payloads = [p for p in entities_payload if p.get("primary")]
+            other_payloads = [p for p in entities_payload if not p.get("primary")]
+
+            # Add back other sensors until we hit the limit
+            final_payloads = essential_payloads.copy()
+            for sensor_payload in other_payloads:
+                test_payload = {
+                    "merge_variables": {
+                        "entities": final_payloads + [sensor_payload],
+                        "timestamp": timestamp,
+                        "count": len(final_payloads) + 1,
+                        "co2_value": co2_state.state if co2_state else None,
+                        "co2_unit": (
+                            co2_state.attributes.get("unit_of_measurement", "ppm")
+                            if co2_state
+                            else "ppm"
+                        ),
+                    }
+                }
+                if estimate_payload_size(test_payload) <= MAX_PAYLOAD_SIZE:
+                    final_payloads.append(sensor_payload)
+                else:
+                    break
+
+            payload["merge_variables"]["entities"] = final_payloads
+            payload["merge_variables"]["count"] = len(final_payloads)
+            final_size = estimate_payload_size(payload)
+            _LOGGER.debug(
+                "Trimmed payload size: %d bytes (%d entities)",
+                final_size,
+                len(final_payloads),
+            )
+
+        # Send to TRMNL
+        try:
+            async with aiohttp.ClientSession() as session:
+                _LOGGER.debug("Sending data to TRMNL webhook")
+                async with session.post(current_url, json=payload) as response:
+                    if response.status == 200:
+                        _LOGGER.info(
+                            "Successfully sent %d sensors to TRMNL (CO2: %s)",
+                            len(entities_payload),
+                            co2_state.state if co2_state else "unknown",
+                        )
+                        _LOGGER.debug("Response: %s", await response.text())
+                    else:
+                        _LOGGER.error("Webhook error: %s", response.status)
+                        _LOGGER.error("Response: %s", await response.text())
+        except Exception as err:
+            _LOGGER.error("Failed to send data to webhook: %s", err)
+
+    # Set up periodic updates
+    _LOGGER.debug("Setting up periodic timer for %d seconds", update_interval)
     remove_timer = async_track_time_interval(
-        hass, process_weather_station_entities, timedelta(seconds=update_interval)
+        hass, process_sensors, timedelta(seconds=update_interval)
     )
 
     # Store the timer removal function
     hass.data[DOMAIN][entry.entry_id]["remove_timer"] = remove_timer
 
-    # Run initial scan
-    _LOGGER.debug("TRMNL Weather: Running initial entity scan")
-    await process_weather_station_entities()
+    # Set up entry update listener for options changes
+    async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+        """Update listener to handle option changes."""
+        _LOGGER.debug("Configuration updated, reloading integration")
+        await hass.config_entries.async_reload(entry.entry_id)
 
-    _LOGGER.info("TRMNL Weather: Integration setup completed for URL: %s", url)
+    entry.add_update_listener(async_update_entry)
+
+    # Run initial update
+    _LOGGER.debug("Running initial sensor update")
+    await process_sensors()
+
+    _LOGGER.info("TRMNL Weather integration setup completed")
     return True
 
 
@@ -483,11 +328,16 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     try:
         if entry.entry_id in hass.data[DOMAIN]:
-            _LOGGER.debug("TRMNL Weather: Removing timer and cleaning up")
-            hass.data[DOMAIN][entry.entry_id]["remove_timer"]()
+            _LOGGER.debug("Removing timer and cleaning up")
+
+            # Remove the timer
+            if "remove_timer" in hass.data[DOMAIN][entry.entry_id]:
+                hass.data[DOMAIN][entry.entry_id]["remove_timer"]()
+
+            # Clean up data
             hass.data[DOMAIN].pop(entry.entry_id)
-            _LOGGER.info("TRMNL Weather: Successfully unloaded integration")
+            _LOGGER.info("Successfully unloaded integration")
     except Exception as err:
-        _LOGGER.error("TRMNL Weather: Error unloading integration: %s", err)
+        _LOGGER.error("Error unloading integration: %s", err)
         return False
     return True

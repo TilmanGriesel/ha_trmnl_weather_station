@@ -1,0 +1,54 @@
+repos:
+  # Python
+  - repo: https://github.com/psf/black
+    rev: 23.9.1
+    hooks:
+      - id: black
+        language_version: python3
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.1.0
+    hooks:
+      - id: flake8
+
+  # HTML, CSS, JS, TS, MD, ...
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.3
+    hooks:
+      - id: prettier
+        types_or: [javascript, jsx, ts, tsx, css, html, json, yaml, markdown]
+        exclude: |
+          (?x)^(
+            services/web/src/static/vendor/|
+            services/web/src/static/dist/
+          )
+        additional_dependencies:
+          - prettier@3.0.3
+          - "@prettier/plugin-xml@3.1.1"
+
+  # Generic
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        stages: [pre-commit]
+        exclude: ^services/web/src/static/vendor/
+      - id: end-of-file-fixer
+        stages: [pre-commit]
+        exclude: ^services/web/src/static/vendor/
+      - id: check-yaml
+        stages: [pre-commit]
+        exclude: ^services/web/src/static/vendor/
+      - id: check-json
+        stages: [pre-commit]
+        exclude: ^services/web/src/static/vendor/
+      - id: mixed-line-ending
+        stages: [pre-commit]
+        exclude: ^services/web/src/static/vendor/
+        args: [--fix=lf]

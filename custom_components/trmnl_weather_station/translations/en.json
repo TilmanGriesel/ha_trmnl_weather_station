@@ -1,0 +1,89 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "TRMNL Weather Station Setup",
+        "description": "Configure sensors for TRMNL display. Requires 1 CO₂ sensor + up to 4 others.",
+        "data": {
+          "url": "Webhook URL",
+          "co2_sensor": "CO₂ Sensor",
+          "co2_name": "CO₂ Label",
+          "sensor_1": "Sensor 1",
+          "sensor_1_name": "Label 1",
+          "sensor_2": "Sensor 2",
+          "sensor_2_name": "Label 2",
+          "sensor_3": "Sensor 3",
+          "sensor_3_name": "Label 3",
+          "sensor_4": "Sensor 4",
+          "sensor_4_name": "Label 4",
+          "update_interval": "Update Interval (sec)"
+        },
+        "data_description": {
+          "url": "TRMNL dashboard webhook URL",
+          "co2_sensor": "Air quality CO₂ sensor",
+          "co2_name": "Display label (e.g. 'Office', 'Main')",
+          "sensor_1": "Weather station sensor",
+          "sensor_1_name": "Display label",
+          "sensor_2": "Weather station sensor",
+          "sensor_2_name": "Display label",
+          "sensor_3": "Weather station sensor",
+          "sensor_3_name": "Display label",
+          "sensor_4": "Weather station sensor",
+          "sensor_4_name": "Display label",
+          "update_interval": "Update frequency (5min - 24hrs)"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Invalid URL. Must start with http:// or https://",
+      "cannot_connect": "Can't connect to TRMNL. Check URL.",
+      "unknown": "Setup error occurred."
+    },
+    "abort": {
+      "already_configured": "Already configured for this URL."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "TRMNL Weather Options",
+        "description": "Update sensor settings.",
+        "data": {
+          "url": "Webhook URL",
+          "co2_sensor": "CO₂ Sensor",
+          "co2_name": "CO₂ Label",
+          "sensor_1": "Sensor 1",
+          "sensor_1_name": "Label 1",
+          "sensor_2": "Sensor 2",
+          "sensor_2_name": "Label 2",
+          "sensor_3": "Sensor 3",
+          "sensor_3_name": "Label 3",
+          "sensor_4": "Sensor 4",
+          "sensor_4_name": "Label 4",
+          "update_interval": "Update Interval (sec)"
+        },
+        "data_description": {
+          "url": "TRMNL dashboard webhook URL",
+          "co2_sensor": "Air quality CO₂ sensor",
+          "co2_name": "Display label (e.g. 'Office CO₂')",
+          "sensor_1": "Weather station sensor",
+          "sensor_1_name": "Display label (e.g. 'Indoor')",
+          "sensor_2": "Weather station sensor",
+          "sensor_2_name": "Display label (e.g. 'Outdoor')",
+          "sensor_3": "Weather station sensor",
+          "sensor_3_name": "Display label (e.g. 'Bedroom')",
+          "sensor_4": "Weather station sensor",
+          "sensor_4_name": "Display label (e.g. 'Wind')",
+          "update_interval": "Update frequency (5min - 24hrs)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "trmnl_weather_status": {
+        "name": "TRMNL Status"
+      }
+    }
+  }
+}

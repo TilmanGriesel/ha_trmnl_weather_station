@@ -9,118 +9,310 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import device_registry as dr, entity_registry as er
 
 from homeassistant.helpers.selector import (
-    DeviceSelector,
-    DeviceSelectorConfig,
-    BooleanSelector,
+    EntitySelector,
+    EntitySelectorConfig,
 )
-
-has_device_selector = True
 
 from .const import (
     DOMAIN,
     CONF_URL,
     MIN_TIME_BETWEEN_UPDATES,
-    PRIORITY_SENSORS,
-    TOP_PRIORITY_SENSORS,
-    CONF_STATION_KEYWORD,
-    DEFAULT_STATION_KEYWORD,
-    CONF_PRIMARY_CO2,
-    CONF_DEVICES,
-    CONF_INCLUDE_OUTDOOR,
+    CONF_CO2_SENSOR,
+    CONF_CO2_NAME,
+    CONF_SENSOR_1,
+    CONF_SENSOR_1_NAME,
+    CONF_SENSOR_2,
+    CONF_SENSOR_2_NAME,
+    CONF_SENSOR_3,
+    CONF_SENSOR_3_NAME,
+    CONF_SENSOR_4,
+    CONF_SENSOR_4_NAME,
+    DEFAULT_URL,
+    SENSOR_DEVICE_CLASSES,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, str]:
-    """Validate the user input allows us to connect."""
-    # URL validation
-    if not data[CONF_URL].startswith(("http://", "https://")):
-        raise InvalidURL
+# =============================================================================
+# Helper Functions
+# =============================================================================
 
+def get_entity_selectors() -> tuple[dict, dict]:
+    """Create entity selectors for CO2 and general sensors.
+
+    Returns:
+        tuple: (co2_filter, sensor_filter) dictionaries for entity selection
+    """
+    co2_filter = {
+        "domain": ["sensor"],
+        "device_class": ["carbon_dioxide"],
+    }
+
+    sensor_filter = {
+        "domain": ["sensor"],
+        "device_class": SENSOR_DEVICE_CLASSES,
+    }
+
+    return co2_filter, sensor_filter
+
+
+def get_sensor_friendly_name(hass: HomeAssistant, entity_id: str) -> str:
+    """Get a friendly name for a sensor entity.
+
+    Args:
+        hass: Home Assistant instance
+        entity_id: The entity ID to get the name for
+
+    Returns:
+        str: A user-friendly name for the sensor
+    """
+    entity_registry = er.async_get(hass)
+    entity = entity_registry.async_get(entity_id)
+
+    if entity and entity.original_name:
+        return entity.original_name
+
+    # Fallback to parsing entity_id
+    sensor_name = entity_id.split(".")[-1].replace("_", " ").title()
+    return sensor_name
+
+
+def create_base_schema(defaults: dict = None) -> vol.Schema:
+    """Create the base schema for configuration.
+
+    Args:
+        defaults: Dictionary of default values for the form fields
+
+    Returns:
+        vol.Schema: The configuration schema
+    """
+    if defaults is None:
+        defaults = {}
+
+    co2_filter, sensor_filter = get_entity_selectors()
+
+    schema_dict = {
+        vol.Required(
+            CONF_URL,
+            default=defaults.get(CONF_URL, DEFAULT_URL)
+        ): str,
+
+        vol.Required(
+            CONF_CO2_SENSOR,
+            default=defaults.get(CONF_CO2_SENSOR)
+        ): EntitySelector(EntitySelectorConfig(filter=co2_filter)),
+
+        vol.Optional(
+            CONF_CO2_NAME,
+            default=defaults.get(CONF_CO2_NAME, "CO2")
+        ): str,
+
+        vol.Optional(
+            CONF_SENSOR_1,
+            default=defaults.get(CONF_SENSOR_1)
+        ): EntitySelector(EntitySelectorConfig(filter=sensor_filter)),
+
+        vol.Optional(
+            CONF_SENSOR_1_NAME,
+            default=defaults.get(CONF_SENSOR_1_NAME, "")
+        ): str,
+
+        vol.Optional(
+            CONF_SENSOR_2,
+            default=defaults.get(CONF_SENSOR_2)
+        ): EntitySelector(EntitySelectorConfig(filter=sensor_filter)),
+
+        vol.Optional(
+            CONF_SENSOR_2_NAME,
+            default=defaults.get(CONF_SENSOR_2_NAME, "")
+        ): str,
+
+        vol.Optional(
+            CONF_SENSOR_3,
+            default=defaults.get(CONF_SENSOR_3)
+        ): EntitySelector(EntitySelectorConfig(filter=sensor_filter)),
+
+        vol.Optional(
+            CONF_SENSOR_3_NAME,
+            default=defaults.get(CONF_SENSOR_3_NAME, "")
+        ): str,
+
+        vol.Optional(
+            CONF_SENSOR_4,
+            default=defaults.get(CONF_SENSOR_4)
+        ): EntitySelector(EntitySelectorConfig(filter=sensor_filter)),
+
+        vol.Optional(
+            CONF_SENSOR_4_NAME,
+            default=defaults.get(CONF_SENSOR_4_NAME, "")
+        ): str,
+
+        vol.Optional(
+            "update_interval",
+            default=defaults.get("update_interval", MIN_TIME_BETWEEN_UPDATES)
+        ): vol.All(vol.Coerce(int), vol.Range(min=300, max=86400)),
+    }
+
+    return vol.Schema(schema_dict)
+
+
+async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, str]:
+    """Validate the user input and create entry title.
+
+    Args:
+        hass: Home Assistant instance
+        data: User input data from the config flow
+
+    Returns:
+        dict: Contains the title for the config entry
+
+    Raises:
+        InvalidURL: If the provided URL is not valid
+    """
+    # Validate URL format
+    if not data[CONF_URL].startswith(("http://", "https://")):
+        raise InvalidURL("URL must start with http:// or https://")
+
+    # Create a descriptive title for the integration entry
     title_parts = ["TRMNL Weather"]
 
-    if data.get(CONF_STATION_KEYWORD) != DEFAULT_STATION_KEYWORD:
-        title_parts.append(data[CONF_STATION_KEYWORD].capitalize())
-
-    # Add selected devices to title (if any)
-    device_reg = dr.async_get(hass)
-    selected_device_names = []
-    for device_id in data.get(CONF_DEVICES, []):
-        device = device_reg.async_get(device_id)
-        if device and device.name:
-            selected_device_names.append(device.name)
-
-    if selected_device_names:
-        title_parts.append(f"({', '.join(selected_device_names)})")
-    else:
-        # Add sensor types to title if no devices specified
-        sensor_names = [
-            s.replace("_", " ").capitalize() for s in TOP_PRIORITY_SENSORS[:2]
-        ]
-        title_parts.append(f"({', '.join(sensor_names)})")
+    # Add CO2 sensor info to title since it's required
+    if data.get(CONF_CO2_SENSOR):
+        # Use custom name if provided, otherwise fall back to entity name
+        sensor_name = data.get(CONF_CO2_NAME) or get_sensor_friendly_name(hass, data[CONF_CO2_SENSOR])
+        title_parts.append(f"({sensor_name})")
 
     return {"title": " ".join(title_parts)}
 
 
+# =============================================================================
+# Config Flow Classes
+# =============================================================================
+
 class TrmnlWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for TRMNL Weather."""
+    """Handle a config flow for TRMNL Weather Station integration."""
 
     VERSION = 1
 
     async def async_step_user(self, user_input: dict | None = None) -> FlowResult:
-        """Handle the initial step."""
+        """Handle the initial setup step.
+
+        This is the main configuration step where users set up their
+        TRMNL Weather Station integration for the first time.
+
+        Args:
+            user_input: The data submitted by the user, if any
+
+        Returns:
+            FlowResult: Either shows the form or creates the config entry
+        """
         errors = {}
 
+        # Process form submission
         if user_input is not None:
             try:
+                # Validate input and get entry info
                 info = await validate_input(self.hass, user_input)
-                return self.async_create_entry(title=info["title"], data=user_input)
+
+                # Create the config entry
+                return self.async_create_entry(
+                    title=info["title"],
+                    data=user_input
+                )
+
             except InvalidURL:
                 errors["base"] = "invalid_url"
+                _LOGGER.warning("Invalid URL provided: %s", user_input.get(CONF_URL))
+
             except Exception as ex:  # pylint: disable=broad-except
                 _LOGGER.exception("Unexpected exception during config flow: %s", ex)
                 errors["base"] = "unknown"
 
-        # Device selector
-        schema = vol.Schema(
-            {
-                vol.Required(CONF_URL): str,
-                vol.Optional(
-                    CONF_STATION_KEYWORD, default=DEFAULT_STATION_KEYWORD
-                ): str,
-                vol.Optional(CONF_DEVICES, default=[]): DeviceSelector(
-                    DeviceSelectorConfig(
-                        multiple=False,
-                    )
-                ),
-                vol.Optional(CONF_INCLUDE_OUTDOOR, default=True): BooleanSelector(),
-                vol.Optional(
-                    "update_interval", default=MIN_TIME_BETWEEN_UPDATES
-                ): vol.All(vol.Coerce(int), vol.Range(min=300, max=86400)),
-            }
-        )
+        # Show the configuration form
         return self.async_show_form(
             step_id="user",
-            data_schema=schema,
+            data_schema=create_base_schema(),
             errors=errors,
             description_placeholders={
-                "min_interval": "5 minutes",
-                "max_interval": "24 hours",
-                "priority_sensors": ", ".join(
-                    [s.replace("_", " ").capitalize() for s in TOP_PRIORITY_SENSORS]
-                ),
-                "default_station": DEFAULT_STATION_KEYWORD,
-            },
+                "url_example": DEFAULT_URL,
+                "min_interval": str(MIN_TIME_BETWEEN_UPDATES // 60),  # Convert to minutes
+                "max_interval": str(86400 // 3600),  # Convert to hours
+            }
+        )
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Create the options flow for reconfiguration.
+
+        Args:
+            config_entry: The existing config entry to modify
+
+        Returns:
+            TrmnlWeatherOptionsFlowHandler: The options flow handler
+        """
+        return TrmnlWeatherOptionsFlowHandler(config_entry)
+
+
+class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle options flow for TRMNL Weather Station integration.
+
+    This allows users to modify their configuration after the initial setup,
+    such as changing sensors or update intervals.
+    """
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        """Initialize the options flow.
+
+        Args:
+            config_entry: The config entry to modify
+        """
+        # Use the parent class constructor instead of setting config_entry directly
+        super().__init__()
+
+    async def async_step_init(self, user_input: dict | None = None) -> FlowResult:
+        """Handle the options configuration step.
+
+        Args:
+            user_input: The data submitted by the user, if any
+
+        Returns:
+            FlowResult: Either shows the form or creates the options entry
+        """
+        # Process form submission
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+
+        # Get current configuration (options override data)
+        # Use self.config_entry which is provided by the parent class
+        current_config = {**self.config_entry.data, **self.config_entry.options}
+
+        # Log current configuration for debugging
+        _LOGGER.debug("Current configuration for options flow: %s", current_config)
+
+        # Show the options form with current values as defaults
+        return self.async_show_form(
+            step_id="init",
+            data_schema=create_base_schema(defaults=current_config),
+            description_placeholders={
+                "current_url": current_config.get(CONF_URL, "Not set"),
+                "current_co2": current_config.get(CONF_CO2_SENSOR, "Not set"),
+                "current_interval": str(current_config.get("update_interval", MIN_TIME_BETWEEN_UPDATES) // 60),
+            }
         )
 
 
+# =============================================================================
+# Custom Exceptions
+# =============================================================================
+
 class CannotConnect(HomeAssistantError):
-    """Error to indicate we cannot connect."""
+    """Error to indicate we cannot connect to the service."""
 
 
 class InvalidURL(HomeAssistantError):
-    """Error to indicate the URL is invalid."""
+    """Error to indicate the provided URL is invalid."""
