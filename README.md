@@ -13,8 +13,6 @@ While the integration is currently developed and tested with the Netatmo Weather
 ![product](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/product.png?raw=true)
 
 
-![detail](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/detail.png?raw=true)
-
 **Note:** This project is currently under development; feel free to call this project THAWS.
 
 ---
