@@ -5,5 +5,8 @@
   "config_flow": true,
   "documentation": "https://github.com/TilmanGriesel/ha_trmnl_weather_station",
   "iot_class": "cloud_push",
-  "version": "0.2.0"
+  "version": "0.3.0",
+  "requirements": ["aiohttp"],
+  "dependencies": [],
+  "integration_type": "service"
 }

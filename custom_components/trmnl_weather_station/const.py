@@ -2,41 +2,55 @@
 
 DOMAIN = "trmnl_weather_station"
 CONF_URL = "url"
-CONF_PRIORITY_SENSORS = "priority_sensors"
-CONF_STATION_KEYWORD = "station_keyword"
-CONF_PRIMARY_CO2 = "primary_co2_filter"  # TODO: Remove me
-CONF_DEVICES = "devices"
-CONF_INCLUDE_OUTDOOR = "include_outdoor"
+CONF_CO2_SENSOR = "co2_sensor"  # Required CO2 sensor
+CONF_CO2_NAME = "co2_name"  # Custom name for CO2 sensor
+CONF_SENSOR_1 = "sensor_1"
+CONF_SENSOR_1_NAME = "sensor_1_name"  # Custom name for sensor 1
+CONF_SENSOR_2 = "sensor_2"
+CONF_SENSOR_2_NAME = "sensor_2_name"  # Custom name for sensor 2
+CONF_SENSOR_3 = "sensor_3"
+CONF_SENSOR_3_NAME = "sensor_3_name"  # Custom name for sensor 3
+CONF_SENSOR_4 = "sensor_4"
+CONF_SENSOR_4_NAME = "sensor_4_name"  # Custom name for sensor 4
 
-DEFAULT_URL = (
-    "https://usetrmnl.com/api/custom_plugins/XXXX-XXXX-XXXX-XXXX"  # Example URL
-)
-MIN_TIME_BETWEEN_UPDATES = 1800  # 1800 is every 30 mins
-DEFAULT_STATION_KEYWORD = "weather_station"
+DEFAULT_URL = "https://usetrmnl.com/api/custom_plugins/XXXX-XXXX-XXXX-XXXX"
+MIN_TIME_BETWEEN_UPDATES = 1800  # 30 minutes
 
 # API limit for TRMNL
 MAX_PAYLOAD_SIZE = 2048  # 2KB max payload size
 
-DEFAULT_WEATHER_DOMAINS = ["weather_station"]
-OUTDOOR_KEYWORDS = [
-    "outdoor",
-    "outside",
-    "exterior",
-    "garden",
-    "patio",
-    "balcony",
-    "terrace",
-    "yard",
-]
-
-TOP_PRIORITY_SENSORS = [
-    "carbon_dioxide",
+# Preferred sensor types for quick selection
+PREFERRED_SENSOR_TYPES = [
     "temperature",
     "humidity",
+    "pressure",
+    "carbon_dioxide",
+    "wind_speed",
+    "precipitation",
+    "battery",
+    "illuminance",
+    "pm25",
+    "pm10",
+    "aqi",
 ]
 
-PRIORITY_SENSORS = TOP_PRIORITY_SENSORS + [
-    "pressure",
-    "rain",
-    "wind_strength",
+# Device classes for sensor filtering
+SENSOR_DEVICE_CLASSES = [
+    "temperature",
+    "humidity",
+    "atmospheric_pressure",
+    "carbon_dioxide",
+    "wind_speed",
+    "precipitation_intensity",
+    "battery",
+    "illuminance",
+    "pm25",
+    "pm10",
+    "aqi",
+    "volatile_organic_compounds",
+    "nitrogen_dioxide",
+    "nitrogen_monoxide",
+    "nitrous_oxide",
+    "ozone",
+    "sulphur_dioxide",
 ]
