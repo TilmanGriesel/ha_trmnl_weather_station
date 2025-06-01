@@ -1,5 +1,5 @@
 {
-  "name": "TRMNL Weather",
+  "name": "TRMNL Weather Station",
   "render_readme": true,
   "homeassistant": "2024.1.0",
   "hacs": "2.0.0"
