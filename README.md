@@ -13,7 +13,7 @@ While the integration is currently developed and tested with the Netatmo Weather
 
 ![product](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/product.png?raw=true)
 
-If you find Home Assistant Weather Station useful, [leaving a star ⭐](https://github.com/TilmanGriesel/ha_trmnl_weather_station) would be lovely and will help others discover this integration too 🙏.
+If you find Home Assistant Weather Station useful, [leaving a star](https://github.com/TilmanGriesel/ha_trmnl_weather_station)⭐ would be lovely and will help others discover this integration too 🙏.
 
 ## Quickstart Guide
 
@@ -28,11 +28,21 @@ If you find Home Assistant Weather Station useful, [leaving a star ⭐](https://
 
 ### Step 2: Install the TRMNL Recipe
 
-1. Go to https://usetrmnl.com/recipes/46862/install
-1. Click `Install`.
-1. Search for `Home Assistant Weather Station` in your playlist and click `Edit` on it.
-1. Set the `Refresh rate` to `Every 15 mins` or to any value that suits you best.
-1. Click on `Advanced Settings` and copy the `Webhook URL` from the bottom of the edit page, you will need it to setup the Home Assistant integration.
+1. **Visit:** https://usetrmnl.com/recipes/46862/install
+2. Click `Install` to add the **Home Assistant Weather Station** recipe to your playlist.
+3. Once installed, go to your TRMNL playlist and locate **Home Assistant Weather Station**.
+4. Click `Edit` on the recipe.
+6. Click on `Advanced Settings` at the bottom of the edit page.
+7. Copy the `Webhook URL` you’ll need this to complete the Home Assistant integration.
+
+#### Want to Customize the TRMNL Recipe?
+
+* If you want to **change the look or behavior** of the recipe (e.g., adjust refresh rate, tweak appearance), click `Fork` instead of `Install`.
+* Forked Recipes **do not receive automatic updates**, but they allow full customization.
+* Installed Recipes are **read-only**, receive automatic improvements, and are easier to manage for non-technical users.
+
+> Recommended: **Install** for most users.
+> Advanced: **Fork** if you want full control or anticipate needing edits.
 
 ### Step 3: Setup Home Assistant Integration
 After a restart of Home Assistant, this integration is configurable by via "Add Integration" at "Devices & Services" like any core integration. Select `TRMNL Weather Station` and follow the instructions. The `TRMNL Webhook URL` field is the `Webhook URL` you copied earlier.
@@ -43,7 +53,9 @@ After a restart of Home Assistant, this integration is configurable by via "Add 
 
 ### Future Plans
 
-* Publish the integration in the official **HACS** directory.
+* Publish the integration in the official **HACS** repository.
+  * HA Brand MR: https://github.com/home-assistant/brands/pull/7185
+  * HACS Default MR (closed): https://github.com/hacs/default/pull/3512 
 * Refactor and clean up the codebase, simplifying where possible and expanding configuration options as needed.
 * Add automated tests and refactor logic into classes to improve maintainability and structure.
 * Expand and dynamically adapt TRMNL display output based on sensor input.
