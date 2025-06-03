@@ -6,7 +6,7 @@ static_data: ''
 polling_verb: get
 polling_url: ''
 polling_headers: ''
-id: 46862
+id: 84292
 custom_fields:
 - keyname: bio
   name: About This Plugin
@@ -15,5 +15,5 @@ custom_fields:
   github_url: https://github.com/TilmanGriesel/ha_trmnl_weather_station
   learn_more_url: https://github.com/TilmanGriesel/ha_trmnl_weather_station
   email_address: griesel@me.com
-name: Home Assistant Weather Station
+name: Home Assistant Weather Station [DEV]
 refresh_interval: 15

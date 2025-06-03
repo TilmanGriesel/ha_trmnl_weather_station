@@ -1,8 +1,4 @@
 <style>
-  @import url('https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css');
-  .item {
-    padding-bottom: 9px;
-  }
   .trmnl .view--half_vertical::before {
     background: none;
   }
@@ -13,7 +9,6 @@
   </div>
   <div class="layout">
     <div class="grid grid--cols-2">
-      {% assign icon_map = 'temperature:mdi-thermometer,humidity:mdi-water-percent,atmospheric_pressure:mdi-gauge,carbon_dioxide:mdi-molecule-co2,wind_speed:mdi-weather-windy,precipitation_intensity:mdi-weather-rainy,battery:mdi-battery,illuminance:mdi-brightness-6,pm25:mdi-air-filter,pm10:mdi-air-filter,aqi:mdi-air-filter,volatile_organic_compounds:mdi-chemical-weapon,nitrogen_dioxide:mdi-molecule,nitrogen_monoxide:mdi-molecule,nitrous_oxide:mdi-molecule,ozone:mdi-shield-sun,sulphur_dioxide:mdi-molecule,default:mdi-gauge' | split: ',' %}
       {% for entity in entities %}
       {% if entity.type != 'co2_primary' %}
       {% assign entity_icon = 'mdi-gauge' %}
@@ -24,21 +19,20 @@
       {% break %}
       {% endif %}
       {% endfor %}
-
-      <div class="item">
-        <div class="content">
-          <span class="value value--tnums">
-            {%- if entity.val == "unavailable" -%}
-            -
-            {%- else -%}
-            {{- entity.val -}}{{- entity.u -}}
-            {%- endif -%}
+      <div class="item pb--8"">
+        <span class="label">
+          <span class="weather-icon mdi {{ entity_icon }}"/>
+            {{ entity.n }}
           </span>
-          <span class="label">
-            <span class="weather-icon mdi {{ entity_icon }}"/>
-              {{ entity.n }}
+          <div class="content">
+            <span class="value value--tnums sensor-value">
+              {%- if entity.val == "unavailable" -%}
+              -
+              {%- else -%}
+              {{- entity.val -}}{{- entity.u -}}
+              {%- endif -%}
             </span>
-        </div>
+          </div>
       </div>
       {% endif %}
       {% endfor %}
@@ -143,6 +137,5 @@
       }
     });
   }
-
   createCO2Gauge(getCO2Level());
 </script>

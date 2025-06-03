@@ -15,16 +15,16 @@ While the integration is currently developed and tested with the Netatmo Weather
 
 ## Setup Instructions
 
-> ⚠️ This project is currently under development, so installation is a bit manual for now. Full documentation and streamlined setup will follow once it's available in the official HACS and TRMNL Plugin directories.
+> ⚠️ This project is currently under development, so installation is a bit manual for now and the implementation is in subject to change. Full documentation and streamlined setup will follow once it's available in the default HACS repository.
 
 
 ### Step 1: Add custom Integration via HACS
 
 1. Open Home Assistant and navigate to **HACS > Integrations**.
 1. Click the three-dot menu (⋮) in the top-right corner and choose **Custom repositories**.
-1. Add this repository URL as a **"Integration"** type.
+1. Add this repository URL `https://github.com/TilmanGriesel/ha_trmnl_weather_station` as a **"Integration"** type.
 
-### Step 2: Install the TRMNL Plugin
+### Step 2: Install the TRMNL Recipe
 
 1. Go to https://usetrmnl.com/recipes/46862/install
 1. Click `Install`.

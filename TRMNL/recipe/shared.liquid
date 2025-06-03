@@ -2,6 +2,12 @@
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/highcharts-more.js"></script>
 <script src="https://code.highcharts.com/modules/pattern-fill.js"></script>
+<style>
+  @import url('https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css');
+  .sensor-value {
+    font-weight: 600 !important;
+  }
+</style>
 <script type="text/javascript">
   // CO2 level in ppm
   var co2Level = 1200;
@@ -115,3 +121,5 @@
     });
   }
 </script>
+
+{% assign icon_map = 'temperature:mdi-thermometer,humidity:mdi-water-percent,atmospheric_pressure:mdi-gauge,carbon_dioxide:mdi-molecule-co2,wind_speed:mdi-weather-windy,precipitation_intensity:mdi-weather-rainy,battery:mdi-battery,illuminance:mdi-brightness-6,pm25:mdi-air-filter,pm10:mdi-air-filter,aqi:mdi-air-filter,volatile_organic_compounds:mdi-chemical-weapon,nitrogen_dioxide:mdi-molecule,nitrogen_monoxide:mdi-molecule,nitrous_oxide:mdi-molecule,ozone:mdi-shield-sun,sulphur_dioxide:mdi-molecule,default:mdi-gauge' | split: ',' %}
