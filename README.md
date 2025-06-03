@@ -11,11 +11,9 @@ This lightweight Home Assistant integration delivers your data to the TRMNL E-In
 ## Key Features
 While the integration is currently developed and tested with the Netatmo Weather Station, the configuration process lets you mix and match your preferred sensors. It supports a range of common sensor types, including temperature, humidity, pressure, CO₂, wind speed, precipitation, air quality, and more.
 
-If you find Home Assistant Weather Station useful, [leaving a star ⭐](https://github.com/TilmanGriesel/ha_trmnl_weather_station) would be lovely and will help others discover this integration too 🙏.
-
-
 ![product](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/product.png?raw=true)
 
+If you find Home Assistant Weather Station useful, [leaving a star ⭐](https://github.com/TilmanGriesel/ha_trmnl_weather_station) would be lovely and will help others discover this integration too 🙏.
 
 ## Quickstart Guide
 
