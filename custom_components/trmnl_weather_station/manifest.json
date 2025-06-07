@@ -8,5 +8,5 @@
   "integration_type": "service",
   "iot_class": "cloud_push",
   "requirements": ["aiohttp"],
-  "version": "0.3.1"
+  "version": "0.3.2"
 }
