@@ -4,6 +4,8 @@ Use your **TRMNL** display to monitor **live CO₂ levels and up to four custom 
 
 This lightweight Home Assistant integration delivers your data to the TRMNL E-Ink display via the included plugin, for low-power, glanceable monitoring in your home.
 
+![product](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/product.png?raw=true)
+
 ## What It Does
 Send live sensor data (like CO2, temperature, humidity, and more) to a TRMNL E-Ink display. Works with Netatmo and other Home Assistant-compatible devices. Simple manual install steps included.
 
@@ -14,8 +16,6 @@ Send live sensor data (like CO2, temperature, humidity, and more) to a TRMNL E-I
 - Plugin included
 
 If you find Home Assistant Weather Station useful, [leaving a star](https://github.com/TilmanGriesel/ha_trmnl_weather_station) would be lovely and will help others discover this integration too.
-
-![product](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/product.png?raw=true)
 
 ## Quickstart Guide
 
