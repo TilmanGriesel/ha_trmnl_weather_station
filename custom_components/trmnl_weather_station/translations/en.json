@@ -35,18 +35,12 @@
           "sensor_6_name": "Sensor 6 Name"
         },
         "data_description": {
-          "sensor_1": "Optional: Select a temperature, humidity, or other sensor",
-          "sensor_1_name": "Display name for sensor 1",
-          "sensor_2": "Optional: Select a temperature, humidity, or other sensor",
-          "sensor_2_name": "Display name for sensor 2",
-          "sensor_3": "Optional: Select a temperature, humidity, or other sensor",
-          "sensor_3_name": "Display name for sensor 3",
-          "sensor_4": "Optional: Select a temperature, humidity, or other sensor",
-          "sensor_4_name": "Display name for sensor 4",
-          "sensor_5": "Optional: Select a temperature, humidity, or other sensor",
-          "sensor_5_name": "Display name for sensor 5",
-          "sensor_6": "Optional: Select a temperature, humidity, or other sensor",
-          "sensor_6_name": "Display name for sensor 6"
+          "sensor_1_name": "Sensor 1 display name",
+          "sensor_2_name": "Sensor 2 display name",
+          "sensor_3_name": "Sensor 3 display name",
+          "sensor_4_name": "Sensor 4 display name",
+          "sensor_5_name": "Sensor 5 display name",
+          "sensor_6_name": "Sensor 6 display name"
         }
       }
     },
@@ -86,18 +80,6 @@
           "url": "Current: {current_url}",
           "co2_sensor": "Current: {current_co2}",
           "co2_name": "Name shown on TRMNL display",
-          "sensor_1": "Optional sensor",
-          "sensor_1_name": "Display name (leave empty to use sensor name)",
-          "sensor_2": "Optional sensor",
-          "sensor_2_name": "Display name (leave empty to use sensor name)",
-          "sensor_3": "Optional sensor",
-          "sensor_3_name": "Display name (leave empty to use sensor name)",
-          "sensor_4": "Optional sensor",
-          "sensor_4_name": "Display name (leave empty to use sensor name)",
-          "sensor_5": "Optional sensor",
-          "sensor_5_name": "Display name (leave empty to use sensor name)",
-          "sensor_6": "Optional sensor",
-          "sensor_6_name": "Display name (leave empty to use sensor name)",
           "update_interval": "Current: {current_interval} minutes"
         }
       }
