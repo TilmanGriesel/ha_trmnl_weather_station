@@ -14,12 +14,15 @@ from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.helpers.selector import (
     EntitySelector,
     EntitySelectorConfig,
+    NumberSelector,
+    NumberSelectorConfig,
+    NumberSelectorMode,
+    BooleanSelector,
 )
 
 from .const import (
     DOMAIN,
     CONF_URL,
-    MIN_TIME_BETWEEN_UPDATES,
     DEFAULT_UPDATE_INTERVAL,
     CONF_CO2_SENSOR,
     CONF_CO2_NAME,
@@ -36,6 +39,8 @@ from .const import (
     CONF_SENSOR_6,
     CONF_SENSOR_6_NAME,
     CONF_INCLUDE_IDS,
+    CONF_DECIMAL_PLACES,
+    DEFAULT_DECIMAL_PLACES,
     DEFAULT_URL,
     SENSOR_DEVICE_CLASSES,
 )
@@ -102,7 +107,13 @@ def create_basic_schema(defaults: dict = None) -> vol.Schema:
         vol.Optional(
             "update_interval",
             default=defaults.get("update_interval", DEFAULT_UPDATE_INTERVAL),
-        ): vol.All(vol.Coerce(int), vol.Range(min=5, max=1440)),  # 5 minutes to 24 hours
+        ): NumberSelector(NumberSelectorConfig(
+            min=5,
+            max=1440,
+            step=5,
+            unit_of_measurement="minutes",
+            mode=NumberSelectorMode.SLIDER
+        )),
     }
 
     return vol.Schema(schema_dict)
@@ -122,6 +133,7 @@ def create_sensors_schema(defaults: dict = None) -> vol.Schema:
 
     schema_dict = {}
     
+    # Add sensor configurations first
     sensor_configs = [
         (CONF_SENSOR_1, CONF_SENSOR_1_NAME),
         (CONF_SENSOR_2, CONF_SENSOR_2_NAME),
@@ -140,7 +152,14 @@ def create_sensors_schema(defaults: dict = None) -> vol.Schema:
         
         schema_dict[vol.Optional(name_key, default=defaults.get(name_key, ""))] = str
 
-    schema_dict[vol.Optional(CONF_INCLUDE_IDS, default=defaults.get(CONF_INCLUDE_IDS, False))] = bool
+    # Add decimal places at the end, before include IDs
+    schema_dict[vol.Optional(
+        CONF_DECIMAL_PLACES,
+        default=defaults.get(CONF_DECIMAL_PLACES, DEFAULT_DECIMAL_PLACES),
+    )] = vol.All(vol.Coerce(int), vol.Range(min=0, max=4))
+    
+    # Add include IDs last with development category
+    schema_dict[vol.Optional(CONF_INCLUDE_IDS, default=defaults.get(CONF_INCLUDE_IDS, False))] = BooleanSelector()
 
     return vol.Schema(schema_dict)
 
@@ -265,6 +284,7 @@ class TrmnlWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             description_placeholders={
                 "co2_sensor": self.data.get(CONF_CO2_SENSOR, "Unknown"),
                 "co2_name": self.data.get(CONF_CO2_NAME, "CO2"),
+                "decimal_places": str(self.data.get(CONF_DECIMAL_PLACES, DEFAULT_DECIMAL_PLACES)),
             },
         )
 
@@ -335,6 +355,9 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
                 "current_interval": str(
                     current_config.get("update_interval", DEFAULT_UPDATE_INTERVAL)
                 ),
+                "current_decimal_places": str(
+                    current_config.get(CONF_DECIMAL_PLACES, DEFAULT_DECIMAL_PLACES)
+                ),
             },
         )
 
@@ -347,6 +370,7 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
             multiple=False,
         ))
 
+        # Basic configuration fields
         schema_dict = {
             vol.Required(
                 CONF_URL, default=defaults.get(CONF_URL, DEFAULT_URL)
@@ -357,12 +381,9 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
             vol.Optional(
                 CONF_CO2_NAME, default=defaults.get(CONF_CO2_NAME, "CO2")
             ): str,
-            vol.Optional(
-                "update_interval",
-                default=defaults.get("update_interval", DEFAULT_UPDATE_INTERVAL),
-            ): vol.All(vol.Coerce(int), vol.Range(min=5, max=1440)),
         }
 
+        # Sensor configuration fields
         sensor_configs = [
             (CONF_SENSOR_1, CONF_SENSOR_1_NAME),
             (CONF_SENSOR_2, CONF_SENSOR_2_NAME),
@@ -381,7 +402,25 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
             
             schema_dict[vol.Optional(name_key, default=defaults.get(name_key, ""))] = str
 
-        schema_dict[vol.Optional(CONF_INCLUDE_IDS, default=defaults.get(CONF_INCLUDE_IDS, False))] = bool
+        # Misc configuration fields
+        
+        schema_dict[vol.Optional(
+            "update_interval",
+            default=defaults.get("update_interval", DEFAULT_UPDATE_INTERVAL),
+        )] = NumberSelector(NumberSelectorConfig(
+            min=5,
+            max=1440,
+            step=5,
+            unit_of_measurement="minutes",
+            mode=NumberSelectorMode.SLIDER
+        ))
+        
+        schema_dict[vol.Optional(
+            CONF_DECIMAL_PLACES,
+            default=defaults.get(CONF_DECIMAL_PLACES, DEFAULT_DECIMAL_PLACES),
+        )] = vol.All(vol.Coerce(int), vol.Range(min=0, max=4))
+        
+        schema_dict[vol.Optional(CONF_INCLUDE_IDS, default=defaults.get(CONF_INCLUDE_IDS, False))] = BooleanSelector()
 
         return vol.Schema(schema_dict)
 

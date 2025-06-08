@@ -8,7 +8,25 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 
-def create_entity_payload(state, sensor_type="additional", custom_name=None, include_id=False) -> dict:
+def round_sensor_value(value, decimal_places=1):
+    """Round sensor value to specified decimal places."""
+    if value is None:
+        return None
+    
+    try:
+        float_value = float(value)
+        rounded_value = round(float_value, decimal_places)
+        
+        if decimal_places == 0:
+            return int(rounded_value)
+        
+        return rounded_value
+    except (ValueError, TypeError):
+        _LOGGER.debug("Could not round value '%s', returning original", value)
+        return value
+
+
+def create_entity_payload(state, sensor_type="additional", custom_name=None, include_id=False, decimal_places=1) -> dict:
     """Create a payload for a single sensor entity."""
     if not state:
         return None
@@ -20,8 +38,10 @@ def create_entity_payload(state, sensor_type="additional", custom_name=None, inc
     entity_name = entity_parts[1]
     friendly_name = state.attributes.get("friendly_name", "")
 
+    rounded_value = round_sensor_value(state.state, decimal_places)
+
     payload = {
-        "val": state.state,
+        "val": rounded_value,
         "type": sensor_type,
     }
 
@@ -44,7 +64,7 @@ def create_entity_payload(state, sensor_type="additional", custom_name=None, inc
     if "battery_percent" in state.attributes:
         battery = state.attributes.get("battery_percent")
         if battery is not None and float(battery) < 25:
-            payload["battery"] = battery
+            payload["battery"] = round_sensor_value(battery, decimal_places)
 
     if "device_class" in state.attributes:
         payload["device_class"] = state.attributes.get("device_class")
