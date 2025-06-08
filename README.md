@@ -29,7 +29,7 @@ If you find Home Assistant Weather Station useful, [leaving a star](https://gith
 1. Click the three-dot menu (⋮) in the top-right corner and choose **Custom repositories**.
 1. Add this repository URL `https://github.com/TilmanGriesel/ha_trmnl_weather_station` as a **"Integration"** type.
 
-### Step 2: Install the TRMNL
+### Step 2: Fork Recipe to Your TRMNL Playlist
 
 1. **Visit:** https://usetrmnl.com/recipes/46862/install
 1. Click `Fork` to add it to your **TRMNL playlist**.
