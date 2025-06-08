@@ -46,7 +46,6 @@ class SensorProcessor:
         """Process and send sensor data to TRMNL."""
         _LOGGER.debug("Starting sensor data processing")
 
-        # Get current configuration (in case it was updated)
         current_config = {**self.entry.data, **self.entry.options}
         current_url = current_config.get(CONF_URL)
         current_co2_sensor = current_config.get(CONF_CO2_SENSOR)
@@ -67,7 +66,6 @@ class SensorProcessor:
 
         entities_payload = []
 
-        # Get CO2 sensor (required - marked as primary)
         co2_state = self.hass.states.get(current_co2_sensor) if current_co2_sensor else None
         if co2_state:
             co2_payload = create_entity_payload(
@@ -77,7 +75,7 @@ class SensorProcessor:
                 include_id=include_ids
             )
             if co2_payload:
-                co2_payload["primary"] = True  # Mark CO2 as primary sensor
+                co2_payload["primary"] = True
                 entities_payload.append(co2_payload)
                 _LOGGER.debug(
                     "Added CO2 sensor (primary): %s with name '%s'",
@@ -86,9 +84,8 @@ class SensorProcessor:
                 )
         else:
             _LOGGER.warning("CO2 sensor %s not found", current_co2_sensor)
-            return  # Don't send anything if CO2 sensor is missing
+            return
 
-        # Get additional sensors (1-6)
         additional_sensors = [
             (current_sensor_1, current_sensor_1_name, "sensor_1"),
             (current_sensor_2, current_sensor_2_name, "sensor_2"),
@@ -99,7 +96,6 @@ class SensorProcessor:
         ]
 
         for sensor_id, custom_name, sensor_label in additional_sensors:
-            # Check if sensor is configured (not None and not empty string)
             if sensor_id and isinstance(sensor_id, str) and sensor_id.strip():
                 sensor_state = self.hass.states.get(sensor_id.strip())
                 if sensor_state:
@@ -124,7 +120,6 @@ class SensorProcessor:
             _LOGGER.error("No valid sensor data to send")
             return
 
-        # Create final payload
         timestamp = datetime.now().isoformat()
         payload = {
             "merge_variables": {
@@ -140,7 +135,6 @@ class SensorProcessor:
             }
         }
 
-        # Check payload size
         final_size = estimate_payload_size(payload)
         _LOGGER.debug(
             "Payload size: %d bytes (%d entities)", final_size, len(entities_payload)
@@ -151,11 +145,9 @@ class SensorProcessor:
                 "Payload exceeds 2KB limit (%d bytes). Trimming...", final_size
             )
 
-            # Always keep CO2 sensor (primary)
             essential_payloads = [p for p in entities_payload if p.get("primary")]
             other_payloads = [p for p in entities_payload if not p.get("primary")]
 
-            # Add back other sensors until we hit the limit
             final_payloads = essential_payloads.copy()
             for sensor_payload in other_payloads:
                 test_payload = {
@@ -185,7 +177,6 @@ class SensorProcessor:
                 len(final_payloads),
             )
 
-        # Send to TRMNL
         try:
             async with aiohttp.ClientSession() as session:
                 _LOGGER.debug("Sending data to TRMNL webhook")

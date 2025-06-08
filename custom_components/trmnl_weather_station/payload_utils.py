@@ -20,25 +20,20 @@ def create_entity_payload(state, sensor_type="additional", custom_name=None, inc
     entity_name = entity_parts[1]
     friendly_name = state.attributes.get("friendly_name", "")
 
-    # Basic payload
     payload = {
         "val": state.state,
         "type": sensor_type,
     }
 
-    # Conditionally include entity ID
     if include_id:
         payload["id"] = entity_name
 
-    # Add unit if available
     if "unit_of_measurement" in state.attributes:
         payload["u"] = state.attributes.get("unit_of_measurement")
 
-    # Use custom name if provided, otherwise clean up the friendly name
     if custom_name and custom_name.strip():
         payload["n"] = custom_name.strip()
     elif friendly_name:
-        # Clean up the name - remove common prefixes/suffixes
         clean_name = friendly_name
         for word in ["sensor", "Sensor", "Module", "module"]:
             clean_name = clean_name.replace(word, "").strip()
@@ -46,13 +41,11 @@ def create_entity_payload(state, sensor_type="additional", custom_name=None, inc
     else:
         payload["n"] = entity_name.replace("_", " ").title()
 
-    # Add battery status if low
     if "battery_percent" in state.attributes:
         battery = state.attributes.get("battery_percent")
         if battery is not None and float(battery) < 25:
             payload["battery"] = battery
 
-    # Add device class for better categorization
     if "device_class" in state.attributes:
         payload["device_class"] = state.attributes.get("device_class")
 

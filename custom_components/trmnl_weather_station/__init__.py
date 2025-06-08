@@ -38,7 +38,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         co2_sensor = config.get(CONF_CO2_SENSOR)
         update_interval_minutes = config.get("update_interval", MIN_TIME_BETWEEN_UPDATES)
 
-        # Convert minutes to seconds for internal use
         update_interval_seconds = update_interval_minutes * 60
 
         if not url:
@@ -61,21 +60,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.exception("Error setting up integration: %s", ex)
         return False
 
-    # Create sensor processor instance
     processor = SensorProcessor(hass, entry)
 
-    # Set up periodic updates using seconds internally
     _LOGGER.debug("Setting up periodic timer for %d seconds (%d minutes)", 
                  update_interval_seconds, update_interval_minutes)
     remove_timer = async_track_time_interval(
         hass, processor.process_sensors, timedelta(seconds=update_interval_seconds)
     )
 
-    # Store the timer removal function and processor
     hass.data[DOMAIN][entry.entry_id]["remove_timer"] = remove_timer
     hass.data[DOMAIN][entry.entry_id]["processor"] = processor
 
-    # Set up entry update listener for options changes
     async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
         """Update listener to handle option changes."""
         _LOGGER.debug("Configuration updated, reloading integration")
@@ -83,7 +78,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     entry.add_update_listener(async_update_entry)
 
-    # Run initial update
     _LOGGER.debug("Running initial sensor update")
     await processor.process_sensors()
 
@@ -97,11 +91,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         if entry.entry_id in hass.data[DOMAIN]:
             _LOGGER.debug("Removing timer and cleaning up")
 
-            # Remove the timer
             if "remove_timer" in hass.data[DOMAIN][entry.entry_id]:
                 hass.data[DOMAIN][entry.entry_id]["remove_timer"]()
 
-            # Clean up data
             hass.data[DOMAIN].pop(entry.entry_id)
             _LOGGER.info("Successfully unloaded integration")
     except Exception as err:
