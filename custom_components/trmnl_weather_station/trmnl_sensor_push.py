@@ -1,6 +1,7 @@
 """TRMNL sensor push functionality for labeled entities."""
 
 import logging
+
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.template import Template
 
@@ -16,6 +17,7 @@ def get_trmnl_entities(hass: HomeAssistant):
 
 def setup_platform(hass: HomeAssistant, entry) -> None:
     """Set up the TRMNL sensor push platform."""
+
     def process_trmnl_entities():
         """Process and log all TRMNL-labeled entities."""
         trmnl_entities = get_trmnl_entities(hass)

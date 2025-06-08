@@ -5,12 +5,12 @@ from __future__ import annotations
 import logging
 from datetime import timedelta
 
+import homeassistant.helpers.config_validation as cv
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.event import async_track_time_interval
 
-from .const import DOMAIN, CONF_URL, CONF_CO2_SENSOR, MIN_TIME_BETWEEN_UPDATES
+from .const import CONF_CO2_SENSOR, CONF_URL, DOMAIN, MIN_TIME_BETWEEN_UPDATES
 from .sensor_processor import SensorProcessor
 
 _LOGGER = logging.getLogger(__name__)
@@ -36,7 +36,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
         url = config.get(CONF_URL)
         co2_sensor = config.get(CONF_CO2_SENSOR)
-        update_interval_minutes = config.get("update_interval", MIN_TIME_BETWEEN_UPDATES)
+        update_interval_minutes = config.get(
+            "update_interval", MIN_TIME_BETWEEN_UPDATES
+        )
 
         update_interval_seconds = update_interval_minutes * 60
 
@@ -62,8 +64,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     processor = SensorProcessor(hass, entry)
 
-    _LOGGER.debug("Setting up periodic timer for %d seconds (%d minutes)", 
-                 update_interval_seconds, update_interval_minutes)
+    _LOGGER.debug(
+        "Setting up periodic timer for %d seconds (%d minutes)",
+        update_interval_seconds,
+        update_interval_minutes,
+    )
     remove_timer = async_track_time_interval(
         hass, processor.process_sensors, timedelta(seconds=update_interval_seconds)
     )
