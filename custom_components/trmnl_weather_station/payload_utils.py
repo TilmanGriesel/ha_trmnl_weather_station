@@ -9,7 +9,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def round_sensor_value(value, decimal_places=1):
-    """Round sensor value to specified decimal places."""
+    """Round sensor value to specified decimal places, preserving whole numbers as integers."""
     if value is None:
         return None
 
@@ -17,7 +17,7 @@ def round_sensor_value(value, decimal_places=1):
         float_value = float(value)
         rounded_value = round(float_value, decimal_places)
 
-        if decimal_places == 0:
+        if rounded_value == int(rounded_value):
             return int(rounded_value)
 
         return rounded_value
