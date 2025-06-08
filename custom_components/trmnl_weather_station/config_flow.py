@@ -271,7 +271,7 @@ class TrmnlWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the sensors configuration step.
 
         This is step 2/2 where users can optionally add up to 6 additional
-        weather sensors beyond the required CO2 sensor.
+        sensors beyond the required CO2 sensor.
 
         Args:
             user_input: The data submitted by the user, if any

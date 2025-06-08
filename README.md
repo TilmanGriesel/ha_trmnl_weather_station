@@ -1,6 +1,6 @@
 # TRMNL Home Assistant Weather Station
 
-Use your **TRMNL** display to monitor **live CO₂ levels and up to six custom weather sensors** from your **Netatmo** or other supported stations.
+Use your **TRMNL** display to monitor **live CO₂ levels and up to six custom sensors** from your **Netatmo** or other supported stations.
 
 This lightweight Home Assistant integration delivers your data to the TRMNL E-Ink display via the included plugin, for low-power, glanceable monitoring in your home.
 
