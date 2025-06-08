@@ -8,7 +8,7 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 
-def create_entity_payload(state, sensor_type="additional", custom_name=None) -> dict:
+def create_entity_payload(state, sensor_type="additional", custom_name=None, include_id=False) -> dict:
     """Create a payload for a single sensor entity."""
     if not state:
         return None
@@ -22,10 +22,13 @@ def create_entity_payload(state, sensor_type="additional", custom_name=None) -> 
 
     # Basic payload
     payload = {
-        "id": entity_name,
         "val": state.state,
         "type": sensor_type,
     }
+
+    # Conditionally include entity ID
+    if include_id:
+        payload["id"] = entity_name
 
     # Add unit if available
     if "unit_of_measurement" in state.attributes:
