@@ -8,14 +8,14 @@
           "url": "TRMNL Webhook URL",
           "co2_sensor": "CO₂ Sensor (Required)",
           "co2_name": "CO₂ Display Name",
-          "update_interval": "Update Frequency",
+          "update_interval_minutes": "Update Frequency",
           "decimal_places": "Decimal Places"
         },
         "data_description": {
           "url": "Your TRMNL webhook URL (starts with https://)",
           "co2_sensor": "Select your air quality CO₂ sensor from available sensors",
           "co2_name": "Name to display on TRMNL (e.g., 'Office CO₂', 'Living Room')",
-          "update_interval": "How often to send data to TRMNL in minutes (5-1440)",
+          "update_interval_minutes": "How often to send data to TRMNL in minutes (5-180)",
           "decimal_places": "Number of decimal places for sensor values (0-4). Use 0 for whole numbers, 1-2 for most sensors."
         }
       },
@@ -79,7 +79,7 @@
           "sensor_5_name": "Display Name 5",
           "sensor_6": "Sensor 6",
           "sensor_6_name": "Display Name 6",
-          "update_interval": "Update Frequency",
+          "update_interval_minutes": "Update Frequency",
           "decimal_places": "Decimal Places",
           "include_ids": "Include Entity IDs"
         },
@@ -87,7 +87,7 @@
           "url": "Current: {current_url}",
           "co2_sensor": "Current: {current_co2}",
           "co2_name": "Name shown on TRMNL display",
-          "update_interval": "Current: {current_interval} minutes",
+          "update_interval_minutes": "Current: {current_interval} minutes",
           "decimal_places": "Current: {current_decimal_places} decimal places. Controls precision of all sensor values.",
           "include_ids": "Include Home Assistant entity IDs in the data sent to TRMNL"
         }
