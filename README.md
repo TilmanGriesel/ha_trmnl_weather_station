@@ -47,6 +47,9 @@ After a restart of Home Assistant, this integration is configurable by via "Add 
 
 ---
 
+### Home Assistant Setup Demo
+**Note:** This recording is from version 0.3 and slightly outdated. The current configuration is simpler and more flexible.
+
 ![setup_speedrun](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/setup/ha_setup_speedrun.gif?raw=true)
 
 ---
