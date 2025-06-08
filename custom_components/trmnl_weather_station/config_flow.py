@@ -57,7 +57,8 @@ def get_entity_selectors() -> tuple[dict, dict]:
 
     sensor_filter = {
         "domain": ["sensor"],
-        "device_class": SENSOR_DEVICE_CLASSES,
+        # It could be more useful if we are not filtering at all
+        # "device_class": SENSOR_DEVICE_CLASSES,
     }
 
     return co2_filter, sensor_filter
