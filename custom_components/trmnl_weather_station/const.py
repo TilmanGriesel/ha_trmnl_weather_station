@@ -12,6 +12,10 @@ CONF_SENSOR_3 = "sensor_3"
 CONF_SENSOR_3_NAME = "sensor_3_name"  # Custom name for sensor 3
 CONF_SENSOR_4 = "sensor_4"
 CONF_SENSOR_4_NAME = "sensor_4_name"  # Custom name for sensor 4
+CONF_SENSOR_5 = "sensor_5"
+CONF_SENSOR_5_NAME = "sensor_5_name"  # Custom name for sensor 5
+CONF_SENSOR_6 = "sensor_6"
+CONF_SENSOR_6_NAME = "sensor_6_name"  # Custom name for sensor 6
 
 DEFAULT_URL = ""
 MIN_TIME_BETWEEN_UPDATES = 1800  # 30 minutes
