@@ -29,23 +29,14 @@ If you find Home Assistant Weather Station useful, [leaving a star](https://gith
 1. Add this repository URL `https://github.com/TilmanGriesel/ha_trmnl_weather_station` as a **"Integration"** type.
 
 ### Step 2: Install the TRMNL
-> ⚠️ **Note:** As of June 7 25, the **Install** option doesn't support configuration, likely a TRMNL bug. Use **Fork** instead.
 
 1. **Visit:** https://usetrmnl.com/recipes/46862/install
-2. Click `Install` to add the **Home Assistant Weather Station** recipe to your playlist.
-3. Once installed, go to your TRMNL playlist and locate **Home Assistant Weather Station**.
-4. Click `Edit` on the recipe.
-6. Click on `Advanced Settings` at the bottom of the edit page.
-7. Copy the `Webhook URL` you’ll need this to complete the Home Assistant integration.
-
-#### Want to Customize the TRMNL Recipe?
-
-* If you want to **change the look or behavior** of the recipe (e.g., adjust refresh rate, tweak appearance), click `Fork` instead of `Install`.
-* Forked Recipes **do not receive automatic updates**, but they allow full customization.
-* Installed Recipes are **read-only**, receive automatic improvements, and are easier to manage for non-technical users.
-
-> Recommended: **Install** for most users.
-> Advanced: **Fork** if you want full control or anticipate needing edits.
+1. Click `Fork` to add it to your **TRMNL playlist**.
+1. Go to your **TRMNL playlist** and locate **Home Assistant Weather Station**.
+1. Click `Edit` on the **Home Assistant Weather Station** settings icon.
+1. Set the `refresh rate` to **15 minutes** (or whatever suits you best).
+1. Click `Advanced Settings` and **scroll to the bottom**.
+1. **Copy** the `Webhook URL` — **you'll need this to complete** the Home Assistant integration.
 
 ### Step 3: Setup Home Assistant Integration
 After a restart of Home Assistant, this integration is configurable by via "Add Integration" at "Devices & Services" like any core integration. Select `TRMNL Weather Station` and follow the instructions. The `TRMNL Webhook URL` field is the `Webhook URL` you copied earlier.
