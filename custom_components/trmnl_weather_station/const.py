@@ -2,30 +2,28 @@
 
 DOMAIN = "trmnl_weather_station"
 CONF_URL = "url"
-CONF_CO2_SENSOR = "co2_sensor"  # Required CO2 sensor
-CONF_CO2_NAME = "co2_name"  # Custom name for CO2 sensor
+CONF_CO2_SENSOR = "co2_sensor"
+CONF_CO2_NAME = "co2_name"
 CONF_SENSOR_1 = "sensor_1"
-CONF_SENSOR_1_NAME = "sensor_1_name"  # Custom name for sensor 1
+CONF_SENSOR_1_NAME = "sensor_1_name"
 CONF_SENSOR_2 = "sensor_2"
-CONF_SENSOR_2_NAME = "sensor_2_name"  # Custom name for sensor 2
+CONF_SENSOR_2_NAME = "sensor_2_name"
 CONF_SENSOR_3 = "sensor_3"
-CONF_SENSOR_3_NAME = "sensor_3_name"  # Custom name for sensor 3
+CONF_SENSOR_3_NAME = "sensor_3_name"
 CONF_SENSOR_4 = "sensor_4"
-CONF_SENSOR_4_NAME = "sensor_4_name"  # Custom name for sensor 4
+CONF_SENSOR_4_NAME = "sensor_4_name"
 CONF_SENSOR_5 = "sensor_5"
-CONF_SENSOR_5_NAME = "sensor_5_name"  # Custom name for sensor 5
+CONF_SENSOR_5_NAME = "sensor_5_name"
 CONF_SENSOR_6 = "sensor_6"
-CONF_SENSOR_6_NAME = "sensor_6_name"  # Custom name for sensor 6
-CONF_INCLUDE_IDS = "include_ids"  # Switch to include entity IDs in payload
+CONF_SENSOR_6_NAME = "sensor_6_name"
+CONF_INCLUDE_IDS = "include_ids"
 
 DEFAULT_URL = ""
-MIN_TIME_BETWEEN_UPDATES = 30  # 30 minutes
-DEFAULT_UPDATE_INTERVAL = 30  # Default 30 minutes
+MIN_TIME_BETWEEN_UPDATES = 30
+DEFAULT_UPDATE_INTERVAL = 30
 
-# API limit for TRMNL
-MAX_PAYLOAD_SIZE = 2048  # 2KB max payload size
+MAX_PAYLOAD_SIZE = 2048
 
-# Preferred sensor types for quick selection
 PREFERRED_SENSOR_TYPES = [
     "temperature",
     "humidity",
@@ -40,7 +38,6 @@ PREFERRED_SENSOR_TYPES = [
     "aqi",
 ]
 
-# Device classes for sensor filtering
 SENSOR_DEVICE_CLASSES = [
     "temperature",
     "humidity",
