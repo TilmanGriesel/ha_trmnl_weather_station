@@ -67,10 +67,16 @@ def create_entity_payload(
     else:
         payload["n"] = entity_name.replace("_", " ").title()
 
+    if "icon" in state.attributes:
+        icon = state.attributes.get("icon")
+        if icon:
+            payload["i"] = icon
+            _LOGGER.debug("Added icon '%s' for entity %s", icon, state.entity_id)
+
     if "battery_percent" in state.attributes:
         battery = state.attributes.get("battery_percent")
         if battery is not None and float(battery) < 25:
-            payload["battery"] = round_sensor_value(battery, decimal_places)
+            payload["bat"] = round_sensor_value(battery, decimal_places)
 
     if "device_class" in state.attributes:
         payload["device_class"] = state.attributes.get("device_class")
