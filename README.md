@@ -36,8 +36,7 @@ If you find Home Assistant Weather Station useful, [leaving a star](https://gith
 1. Go to your **TRMNL playlist** and locate **Home Assistant Weather Station**.
 1. Click `Edit` on the **Home Assistant Weather Station** settings icon.
 1. Set the `refresh rate` to **15 minutes** (or whatever suits you best).
-1. Click `Advanced Settings` and **scroll to the bottom**.
-1. **Copy** the `Webhook URL` — **you'll need this to complete** the Home Assistant integration.
+1. **Copy** the `Webhook URL`, **you'll need this to complete** the Home Assistant integration.
 
 ### Step 3: Setup Home Assistant Integration
 
