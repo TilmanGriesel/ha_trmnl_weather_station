@@ -1,0 +1,27 @@
+---
+strategy: webhook
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+polling_url: ''
+polling_headers: ''
+id: 91631
+custom_fields:
+- keyname: bio
+  name: About This Plugin
+  field_type: author_bio
+  description: TRMNL HomeAssistant Smart Home Weather Station Integration
+  github_url: https://github.com/TilmanGriesel/ha_trmnl_weather_station
+  learn_more_url: https://github.com/TilmanGriesel/ha_trmnl_weather_station
+  email_address: griesel@me.com
+- keyname: dummy_key
+  field_type: string
+  name: Home Assistant & Webhook Installation Instructions
+  description: 'This field exists only to disable a default install option and to give you setup instructions. It is not used for any configuration.<br><br> <strong>To set up the Home Assistant Weather Station recipe:</strong><br> 1. Click <strong>Fork</strong> to add it to your TRMNL playlist.<br> 2. Go to your <strong>TRMNL playlist</strong> and locate <strong>Home Assistant Weather Station</strong>.<br> 3. Click <strong>Edit</strong> on the recipe.<br> 4. Set the <strong>refresh rate</strong> to 15 minutes (or whatever suits you best).<br> 5. Click <strong>Advanced Settings</strong> and <strong>scroll to the bottom</strong>.<br> 6. Copy the <strong>Webhook URL</strong> — you''ll need this to complete the Home Assistant integration.<br><br> <strong>Integration Repository:</strong> <a href="https://github.com/TilmanGriesel/ha_trmnl_weather_station" target="_blank"><u>Home Assistant Weather Station Integration on GitHub</u></a>
+
+    '
+  placeholder: Leave this blank
+  optional: true
+name: Home Assistant Weather Station
+refresh_interval: 15

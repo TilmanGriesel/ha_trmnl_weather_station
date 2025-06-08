@@ -1,11 +1,12 @@
-<div class="mashup mashup--1Lx1R">
-  <div class="layout">
-    <div id="co2-gauge"></div>
-  </div>
-  <div class="layout">
+<div class="layout layout--col gap--space-between">
+  <div id="co2-gauge"></div>
+  <div class="item">
     <div class="grid grid--cols-2">
       {% for entity in entities %}
       {% if entity.type != 'co2_primary' %}
+      {% if entity.i and entity.i != blank %}
+      {% assign entity_icon = entity.i | replace: ':', '-' %}
+      {% else %}
       {% assign entity_icon = 'mdi-gauge' %}
       {% for icon_pair in icon_map %}
       {% assign icon_data = icon_pair | split: ':' %}
@@ -14,7 +15,8 @@
       {% break %}
       {% endif %}
       {% endfor %}
-      <div class="item">
+      {% endif %}
+      <div class="col">
         <span class="label">
           <span class="weather-icon mdi {{ entity_icon }}"</span>
           {{ entity.n }}
@@ -36,5 +38,5 @@
 </div>
 
 <script type="text/javascript">
-  createSimpleCO2Gauge(getCO2Level(), 220);
+  createSimpleCO2Gauge(getCO2Level(), 200);
 </script>

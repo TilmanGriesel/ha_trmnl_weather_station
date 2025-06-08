@@ -1,6 +1,9 @@
 <div class="layout layout--col gap--space-between">
   <div class="grid grid--cols-3">
     {% for entity in entities %}
+    {% if entity.i and entity.i != blank %}
+    {% assign entity_icon = entity.i | replace: ':', '-' %}
+    {% else %}
     {% assign entity_icon = 'mdi-gauge' %}
     {% for icon_pair in icon_map %}
     {% assign icon_data = icon_pair | split: ':' %}
@@ -9,6 +12,7 @@
     {% break %}
     {% endif %}
     {% endfor %}
+    {% endif %}
     <div class="item">
       <span class="label">
         <span class="weather-icon mdi {{ entity_icon }}"</span>

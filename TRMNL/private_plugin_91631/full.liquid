@@ -1,6 +1,10 @@
 <style>
+  @import url('https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css');
   .trmnl .view--half_vertical::before {
     background: none;
+  }
+  .sensor-value {
+    font-weight: 600 !important;
   }
 </style>
 <div class="mashup mashup--1Lx1R">
@@ -11,6 +15,9 @@
     <div class="grid grid--cols-2">
       {% for entity in entities %}
       {% if entity.type != 'co2_primary' %}
+      {% if entity.i and entity.i != blank %}
+      {% assign entity_icon = entity.i | replace: ':', '-' %}
+      {% else %}
       {% assign entity_icon = 'mdi-gauge' %}
       {% for icon_pair in icon_map %}
       {% assign icon_data = icon_pair | split: ':' %}
@@ -19,13 +26,14 @@
       {% break %}
       {% endif %}
       {% endfor %}
-      <div class="item pb--8"">
+      {% endif %}
+      <div class="item pb--8">
         <span class="label">
-          <span class="weather-icon mdi {{ entity_icon }}"/>
+          <span class="weather-icon mdi {{ entity_icon }}" />
             {{ entity.n }}
           </span>
           <div class="content">
-            <span class="value value--tnums sensor-value">
+            <span class="value value--tnums sensor-value" data-value-fit="true">
               {%- if entity.val == "unavailable" -%}
               -
               {%- else -%}
@@ -41,7 +49,7 @@
 </div>
 
 <script type="text/javascript">
-  function createCO2Gauge(level, maxWidth) {
+  function createCO2Gauge(level, maxWidth) {    
     Highcharts.chart('co2-gauge', {
       chart: {
         type: "gauge",
@@ -137,5 +145,6 @@
       }
     });
   }
+
   createCO2Gauge(getCO2Level());
 </script>
