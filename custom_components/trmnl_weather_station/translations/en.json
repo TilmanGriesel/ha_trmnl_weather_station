@@ -19,7 +19,7 @@
       },
       "sensors": {
         "title": "Additional Weather Sensors",
-        "description": "**Step 2 of 2: Optional Sensors**\n\nAdd up to 4 additional weather sensors (temperature, humidity, pressure, etc.). All sensors in this step are optional - you can skip any you don't need.",
+        "description": "**Step 2 of 2: Optional Sensors**\n\nAdd up to 6 additional weather sensors (temperature, humidity, pressure, etc.). All sensors in this step are optional - you can skip any you don't need.",
         "data": {
           "sensor_1": "Weather Sensor 1",
           "sensor_1_name": "Sensor 1 Name",
@@ -28,7 +28,11 @@
           "sensor_3": "Weather Sensor 3",
           "sensor_3_name": "Sensor 3 Name",
           "sensor_4": "Weather Sensor 4",
-          "sensor_4_name": "Sensor 4 Name"
+          "sensor_4_name": "Sensor 4 Name",
+          "sensor_5": "Weather Sensor 5",
+          "sensor_5_name": "Sensor 5 Name",
+          "sensor_6": "Weather Sensor 6",
+          "sensor_6_name": "Sensor 6 Name"
         },
         "data_description": {
           "sensor_1": "Optional: Select a temperature, humidity, or other weather sensor",
@@ -38,7 +42,11 @@
           "sensor_3": "Optional: Select a temperature, humidity, or other weather sensor",
           "sensor_3_name": "Display name for sensor 3",
           "sensor_4": "Optional: Select a temperature, humidity, or other weather sensor",
-          "sensor_4_name": "Display name for sensor 4"
+          "sensor_4_name": "Display name for sensor 4",
+          "sensor_5": "Optional: Select a temperature, humidity, or other weather sensor",
+          "sensor_5_name": "Display name for sensor 5",
+          "sensor_6": "Optional: Select a temperature, humidity, or other weather sensor",
+          "sensor_6_name": "Display name for sensor 6"
         }
       }
     },
@@ -68,6 +76,10 @@
           "sensor_3_name": "Display Name 3",
           "sensor_4": "Weather Sensor 4",
           "sensor_4_name": "Display Name 4",
+          "sensor_5": "Weather Sensor 5",
+          "sensor_5_name": "Display Name 5",
+          "sensor_6": "Weather Sensor 6",
+          "sensor_6_name": "Display Name 6",
           "update_interval": "Update Frequency"
         },
         "data_description": {
@@ -82,6 +94,10 @@
           "sensor_3_name": "Display name (leave empty to use sensor name)",
           "sensor_4": "Optional weather sensor",
           "sensor_4_name": "Display name (leave empty to use sensor name)",
+          "sensor_5": "Optional weather sensor",
+          "sensor_5_name": "Display name (leave empty to use sensor name)",
+          "sensor_6": "Optional weather sensor",
+          "sensor_6_name": "Display name (leave empty to use sensor name)",
           "update_interval": "Current: {current_interval} minutes"
         }
       }

@@ -22,6 +22,10 @@ from .const import (
     CONF_SENSOR_3_NAME,
     CONF_SENSOR_4,
     CONF_SENSOR_4_NAME,
+    CONF_SENSOR_5,
+    CONF_SENSOR_5_NAME,
+    CONF_SENSOR_6,
+    CONF_SENSOR_6_NAME,
     MAX_PAYLOAD_SIZE,
 )
 from .payload_utils import create_entity_payload, estimate_payload_size
@@ -54,6 +58,10 @@ class SensorProcessor:
         current_sensor_3_name = current_config.get(CONF_SENSOR_3_NAME)
         current_sensor_4 = current_config.get(CONF_SENSOR_4)
         current_sensor_4_name = current_config.get(CONF_SENSOR_4_NAME)
+        current_sensor_5 = current_config.get(CONF_SENSOR_5)
+        current_sensor_5_name = current_config.get(CONF_SENSOR_5_NAME)
+        current_sensor_6 = current_config.get(CONF_SENSOR_6)
+        current_sensor_6_name = current_config.get(CONF_SENSOR_6_NAME)
 
         entities_payload = []
 
@@ -75,12 +83,14 @@ class SensorProcessor:
             _LOGGER.warning("CO2 sensor %s not found", current_co2_sensor)
             return  # Don't send anything if CO2 sensor is missing
 
-        # Get additional sensors (1-4)
+        # Get additional sensors (1-6)
         additional_sensors = [
             (current_sensor_1, current_sensor_1_name, "sensor_1"),
             (current_sensor_2, current_sensor_2_name, "sensor_2"),
             (current_sensor_3, current_sensor_3_name, "sensor_3"),
             (current_sensor_4, current_sensor_4_name, "sensor_4"),
+            (current_sensor_5, current_sensor_5_name, "sensor_5"),
+            (current_sensor_6, current_sensor_6_name, "sensor_6"),
         ]
 
         for sensor_id, custom_name, sensor_label in additional_sensors:

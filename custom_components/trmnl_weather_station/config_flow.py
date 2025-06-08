@@ -30,6 +30,10 @@ from .const import (
     CONF_SENSOR_3_NAME,
     CONF_SENSOR_4,
     CONF_SENSOR_4_NAME,
+    CONF_SENSOR_5,
+    CONF_SENSOR_5_NAME,
+    CONF_SENSOR_6,
+    CONF_SENSOR_6_NAME,
     DEFAULT_URL,
     SENSOR_DEVICE_CLASSES,
 )
@@ -150,6 +154,18 @@ def create_sensors_schema(defaults: dict = None) -> vol.Schema:
         vol.Optional(
             CONF_SENSOR_4_NAME, default=defaults.get(CONF_SENSOR_4_NAME, "")
         ): str,
+        vol.Optional(
+            CONF_SENSOR_5, default=defaults.get(CONF_SENSOR_5)
+        ): EntitySelector(EntitySelectorConfig(filter=sensor_filter)),
+        vol.Optional(
+            CONF_SENSOR_5_NAME, default=defaults.get(CONF_SENSOR_5_NAME, "")
+        ): str,
+        vol.Optional(
+            CONF_SENSOR_6, default=defaults.get(CONF_SENSOR_6)
+        ): EntitySelector(EntitySelectorConfig(filter=sensor_filter)),
+        vol.Optional(
+            CONF_SENSOR_6_NAME, default=defaults.get(CONF_SENSOR_6_NAME, "")
+        ): str,
     }
 
     return vol.Schema(schema_dict)
@@ -254,7 +270,7 @@ class TrmnlWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_sensors(self, user_input: dict | None = None) -> FlowResult:
         """Handle the sensors configuration step.
 
-        This is step 2/2 where users can optionally add up to 4 additional
+        This is step 2/2 where users can optionally add up to 6 additional
         weather sensors beyond the required CO2 sensor.
 
         Args:
@@ -404,6 +420,20 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
                 vol.Optional(
                     CONF_SENSOR_4_NAME,
                     default=current_config.get(CONF_SENSOR_4_NAME, ""),
+                ): str,
+                vol.Optional(
+                    CONF_SENSOR_5, default=current_config.get(CONF_SENSOR_5)
+                ): EntitySelector(EntitySelectorConfig(filter=sensor_filter)),
+                vol.Optional(
+                    CONF_SENSOR_5_NAME,
+                    default=current_config.get(CONF_SENSOR_5_NAME, ""),
+                ): str,
+                vol.Optional(
+                    CONF_SENSOR_6, default=current_config.get(CONF_SENSOR_6)
+                ): EntitySelector(EntitySelectorConfig(filter=sensor_filter)),
+                vol.Optional(
+                    CONF_SENSOR_6_NAME,
+                    default=current_config.get(CONF_SENSOR_6_NAME, ""),
                 ): str,
                 vol.Optional(
                     "update_interval",
