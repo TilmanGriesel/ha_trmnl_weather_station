@@ -94,8 +94,9 @@ class SensorProcessor:
         ]
 
         for sensor_id, custom_name, sensor_label in additional_sensors:
-            if sensor_id:
-                sensor_state = self.hass.states.get(sensor_id)
+            # Check if sensor is configured (not None and not empty string)
+            if sensor_id and isinstance(sensor_id, str) and sensor_id.strip():
+                sensor_state = self.hass.states.get(sensor_id.strip())
                 if sensor_state:
                     sensor_payload = create_entity_payload(
                         sensor_state, sensor_type=sensor_label, custom_name=custom_name
