@@ -30,9 +30,9 @@ WEATHER_SENSOR_DEVICE_CLASSES = [
     "apparent_power",
     "aqi",
     "atmospheric_pressure",  # alias: pressure
-    "carbon_dioxide",        # CO₂
-    "carbon_monoxide",       # CO
-    "conductivity",          # applicable in rain or soil sensors
+    "carbon_dioxide",  # CO₂
+    "carbon_monoxide",  # CO
+    "conductivity",  # applicable in rain or soil sensors
     "humidity",
     "illuminance",
     "irradiance",
@@ -45,8 +45,8 @@ WEATHER_SENSOR_DEVICE_CLASSES = [
     "pm10",
     "precipitation",
     "precipitation_intensity",
-    "sound_pressure",        # ambient noise
-    "speed",                 # wind speed general
+    "sound_pressure",  # ambient noise
+    "speed",  # wind speed general
     "sulphur_dioxide",
     "temperature",
     "volatile_organic_compounds",

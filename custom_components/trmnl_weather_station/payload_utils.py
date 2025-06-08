@@ -12,21 +12,27 @@ def round_sensor_value(value, decimal_places=1):
     """Round sensor value to specified decimal places."""
     if value is None:
         return None
-    
+
     try:
         float_value = float(value)
         rounded_value = round(float_value, decimal_places)
-        
+
         if decimal_places == 0:
             return int(rounded_value)
-        
+
         return rounded_value
     except (ValueError, TypeError):
         _LOGGER.debug("Could not round value '%s', returning original", value)
         return value
 
 
-def create_entity_payload(state, sensor_type="additional", custom_name=None, include_id=False, decimal_places=1) -> dict:
+def create_entity_payload(
+    state,
+    sensor_type="additional",
+    custom_name=None,
+    include_id=False,
+    decimal_places=1,
+) -> dict:
     """Create a payload for a single sensor entity."""
     if not state:
         return None

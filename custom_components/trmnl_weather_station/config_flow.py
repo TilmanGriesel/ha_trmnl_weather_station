@@ -3,29 +3,28 @@
 from __future__ import annotations
 
 import logging
-import voluptuous as vol
 
+import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers import device_registry as dr, entity_registry as er
-
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.selector import (
+    BooleanSelector,
     EntitySelector,
     EntitySelectorConfig,
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
-    BooleanSelector,
 )
 
 from .const import (
-    DOMAIN,
-    CONF_URL,
-    DEFAULT_UPDATE_INTERVAL,
-    CONF_CO2_SENSOR,
     CONF_CO2_NAME,
+    CONF_CO2_SENSOR,
+    CONF_DECIMAL_PLACES,
+    CONF_INCLUDE_IDS,
     CONF_SENSOR_1,
     CONF_SENSOR_1_NAME,
     CONF_SENSOR_2,
@@ -38,10 +37,11 @@ from .const import (
     CONF_SENSOR_5_NAME,
     CONF_SENSOR_6,
     CONF_SENSOR_6_NAME,
-    CONF_INCLUDE_IDS,
-    CONF_DECIMAL_PLACES,
+    CONF_URL,
     DEFAULT_DECIMAL_PLACES,
+    DEFAULT_UPDATE_INTERVAL,
     DEFAULT_URL,
+    DOMAIN,
     SENSOR_DEVICE_CLASSES,
 )
 
@@ -78,16 +78,25 @@ def get_sensor_friendly_name(hass: HomeAssistant, entity_id: str) -> str:
 def clean_sensor_data(data: dict) -> dict:
     """Clean up sensor data by converting empty strings to None."""
     cleaned = data.copy()
-    
-    sensor_keys = [CONF_SENSOR_1, CONF_SENSOR_2, CONF_SENSOR_3, 
-                   CONF_SENSOR_4, CONF_SENSOR_5, CONF_SENSOR_6]
-    
+
+    sensor_keys = [
+        CONF_SENSOR_1,
+        CONF_SENSOR_2,
+        CONF_SENSOR_3,
+        CONF_SENSOR_4,
+        CONF_SENSOR_5,
+        CONF_SENSOR_6,
+    ]
+
     for key in sensor_keys:
         if key in cleaned:
             value = cleaned[key]
-            if not value or (isinstance(value, str) and (not value.strip() or value.strip() == "None")):
+            if not value or (
+                isinstance(value, str)
+                and (not value.strip() or value.strip() == "None")
+            ):
                 cleaned[key] = None
-    
+
     return cleaned
 
 
@@ -107,13 +116,15 @@ def create_basic_schema(defaults: dict = None) -> vol.Schema:
         vol.Optional(
             "update_interval",
             default=defaults.get("update_interval", DEFAULT_UPDATE_INTERVAL),
-        ): NumberSelector(NumberSelectorConfig(
-            min=5,
-            max=1440,
-            step=5,
-            unit_of_measurement="minutes",
-            mode=NumberSelectorMode.SLIDER
-        )),
+        ): NumberSelector(
+            NumberSelectorConfig(
+                min=5,
+                max=1440,
+                step=5,
+                unit_of_measurement="minutes",
+                mode=NumberSelectorMode.SLIDER,
+            )
+        ),
     }
 
     return vol.Schema(schema_dict)
@@ -126,13 +137,15 @@ def create_sensors_schema(defaults: dict = None) -> vol.Schema:
 
     _, sensor_filter = get_entity_selectors()
 
-    sensor_selector = EntitySelector(EntitySelectorConfig(
-        filter=sensor_filter,
-        multiple=False,
-    ))
+    sensor_selector = EntitySelector(
+        EntitySelectorConfig(
+            filter=sensor_filter,
+            multiple=False,
+        )
+    )
 
     schema_dict = {}
-    
+
     # Add sensor configurations first
     sensor_configs = [
         (CONF_SENSOR_1, CONF_SENSOR_1_NAME),
@@ -142,24 +155,30 @@ def create_sensors_schema(defaults: dict = None) -> vol.Schema:
         (CONF_SENSOR_5, CONF_SENSOR_5_NAME),
         (CONF_SENSOR_6, CONF_SENSOR_6_NAME),
     ]
-    
+
     for sensor_key, name_key in sensor_configs:
         sensor_default = defaults.get(sensor_key)
         if sensor_default and sensor_default.strip():
-            schema_dict[vol.Optional(sensor_key, default=sensor_default)] = sensor_selector
+            schema_dict[
+                vol.Optional(sensor_key, default=sensor_default)
+            ] = sensor_selector
         else:
             schema_dict[vol.Optional(sensor_key)] = sensor_selector
-        
+
         schema_dict[vol.Optional(name_key, default=defaults.get(name_key, ""))] = str
 
     # Add decimal places at the end, before include IDs
-    schema_dict[vol.Optional(
-        CONF_DECIMAL_PLACES,
-        default=defaults.get(CONF_DECIMAL_PLACES, DEFAULT_DECIMAL_PLACES),
-    )] = vol.All(vol.Coerce(int), vol.Range(min=0, max=4))
-    
+    schema_dict[
+        vol.Optional(
+            CONF_DECIMAL_PLACES,
+            default=defaults.get(CONF_DECIMAL_PLACES, DEFAULT_DECIMAL_PLACES),
+        )
+    ] = vol.All(vol.Coerce(int), vol.Range(min=0, max=4))
+
     # Add include IDs last with development category
-    schema_dict[vol.Optional(CONF_INCLUDE_IDS, default=defaults.get(CONF_INCLUDE_IDS, False))] = BooleanSelector()
+    schema_dict[
+        vol.Optional(CONF_INCLUDE_IDS, default=defaults.get(CONF_INCLUDE_IDS, False))
+    ] = BooleanSelector()
 
     return vol.Schema(schema_dict)
 
@@ -174,12 +193,23 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, str]:
         if not co2_state:
             raise InvalidEntity(f"CO2 sensor {data[CONF_CO2_SENSOR]} not found")
 
-    sensor_keys = [CONF_SENSOR_1, CONF_SENSOR_2, CONF_SENSOR_3, 
-                   CONF_SENSOR_4, CONF_SENSOR_5, CONF_SENSOR_6]
-    
+    sensor_keys = [
+        CONF_SENSOR_1,
+        CONF_SENSOR_2,
+        CONF_SENSOR_3,
+        CONF_SENSOR_4,
+        CONF_SENSOR_5,
+        CONF_SENSOR_6,
+    ]
+
     for sensor_key in sensor_keys:
         sensor_id = data.get(sensor_key)
-        if sensor_id and sensor_id != "None" and isinstance(sensor_id, str) and sensor_id.strip():
+        if (
+            sensor_id
+            and sensor_id != "None"
+            and isinstance(sensor_id, str)
+            and sensor_id.strip()
+        ):
             sensor_state = hass.states.get(sensor_id)
             if not sensor_state:
                 raise InvalidEntity(f"Sensor {sensor_id} not found")
@@ -216,7 +246,9 @@ class TrmnlWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 if user_input.get(CONF_CO2_SENSOR):
                     co2_state = self.hass.states.get(user_input[CONF_CO2_SENSOR])
                     if not co2_state:
-                        raise InvalidEntity(f"CO2 sensor {user_input[CONF_CO2_SENSOR]} not found")
+                        raise InvalidEntity(
+                            f"CO2 sensor {user_input[CONF_CO2_SENSOR]} not found"
+                        )
 
                 self.data.update(user_input)
                 return await self.async_step_sensors()
@@ -284,7 +316,9 @@ class TrmnlWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             description_placeholders={
                 "co2_sensor": self.data.get(CONF_CO2_SENSOR, "Unknown"),
                 "co2_name": self.data.get(CONF_CO2_NAME, "CO2"),
-                "decimal_places": str(self.data.get(CONF_DECIMAL_PLACES, DEFAULT_DECIMAL_PLACES)),
+                "decimal_places": str(
+                    self.data.get(CONF_DECIMAL_PLACES, DEFAULT_DECIMAL_PLACES)
+                ),
             },
         )
 
@@ -332,8 +366,14 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
 
         form_defaults = {}
         for key, value in current_config.items():
-            if key in [CONF_SENSOR_1, CONF_SENSOR_2, CONF_SENSOR_3, 
-                      CONF_SENSOR_4, CONF_SENSOR_5, CONF_SENSOR_6]:
+            if key in [
+                CONF_SENSOR_1,
+                CONF_SENSOR_2,
+                CONF_SENSOR_3,
+                CONF_SENSOR_4,
+                CONF_SENSOR_5,
+                CONF_SENSOR_6,
+            ]:
                 if value is None:
                     form_defaults[key] = ""
                 else:
@@ -365,16 +405,16 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
         """Create the combined options schema with all fields."""
         co2_filter, sensor_filter = get_entity_selectors()
 
-        sensor_selector = EntitySelector(EntitySelectorConfig(
-            filter=sensor_filter,
-            multiple=False,
-        ))
+        sensor_selector = EntitySelector(
+            EntitySelectorConfig(
+                filter=sensor_filter,
+                multiple=False,
+            )
+        )
 
         # Basic configuration fields
         schema_dict = {
-            vol.Required(
-                CONF_URL, default=defaults.get(CONF_URL, DEFAULT_URL)
-            ): str,
+            vol.Required(CONF_URL, default=defaults.get(CONF_URL, DEFAULT_URL)): str,
             vol.Required(
                 CONF_CO2_SENSOR, default=defaults.get(CONF_CO2_SENSOR)
             ): EntitySelector(EntitySelectorConfig(filter=co2_filter)),
@@ -392,35 +432,49 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
             (CONF_SENSOR_5, CONF_SENSOR_5_NAME),
             (CONF_SENSOR_6, CONF_SENSOR_6_NAME),
         ]
-        
+
         for sensor_key, name_key in sensor_configs:
             sensor_default = defaults.get(sensor_key)
             if sensor_default and sensor_default.strip() and sensor_default != "None":
-                schema_dict[vol.Optional(sensor_key, default=sensor_default)] = sensor_selector
+                schema_dict[
+                    vol.Optional(sensor_key, default=sensor_default)
+                ] = sensor_selector
             else:
                 schema_dict[vol.Optional(sensor_key)] = sensor_selector
-            
-            schema_dict[vol.Optional(name_key, default=defaults.get(name_key, ""))] = str
+
+            schema_dict[
+                vol.Optional(name_key, default=defaults.get(name_key, ""))
+            ] = str
 
         # Misc configuration fields
-        
-        schema_dict[vol.Optional(
-            "update_interval",
-            default=defaults.get("update_interval", DEFAULT_UPDATE_INTERVAL),
-        )] = NumberSelector(NumberSelectorConfig(
-            min=5,
-            max=1440,
-            step=5,
-            unit_of_measurement="minutes",
-            mode=NumberSelectorMode.SLIDER
-        ))
-        
-        schema_dict[vol.Optional(
-            CONF_DECIMAL_PLACES,
-            default=defaults.get(CONF_DECIMAL_PLACES, DEFAULT_DECIMAL_PLACES),
-        )] = vol.All(vol.Coerce(int), vol.Range(min=0, max=4))
-        
-        schema_dict[vol.Optional(CONF_INCLUDE_IDS, default=defaults.get(CONF_INCLUDE_IDS, False))] = BooleanSelector()
+
+        schema_dict[
+            vol.Optional(
+                "update_interval",
+                default=defaults.get("update_interval", DEFAULT_UPDATE_INTERVAL),
+            )
+        ] = NumberSelector(
+            NumberSelectorConfig(
+                min=5,
+                max=1440,
+                step=5,
+                unit_of_measurement="minutes",
+                mode=NumberSelectorMode.SLIDER,
+            )
+        )
+
+        schema_dict[
+            vol.Optional(
+                CONF_DECIMAL_PLACES,
+                default=defaults.get(CONF_DECIMAL_PLACES, DEFAULT_DECIMAL_PLACES),
+            )
+        ] = vol.All(vol.Coerce(int), vol.Range(min=0, max=4))
+
+        schema_dict[
+            vol.Optional(
+                CONF_INCLUDE_IDS, default=defaults.get(CONF_INCLUDE_IDS, False)
+            )
+        ] = BooleanSelector()
 
         return vol.Schema(schema_dict)
 

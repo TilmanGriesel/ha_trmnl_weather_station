@@ -2,18 +2,19 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from datetime import datetime
-import asyncio
-import aiohttp
 
+import aiohttp
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
 from .const import (
-    CONF_URL,
-    CONF_CO2_SENSOR,
     CONF_CO2_NAME,
+    CONF_CO2_SENSOR,
+    CONF_DECIMAL_PLACES,
+    CONF_INCLUDE_IDS,
     CONF_SENSOR_1,
     CONF_SENSOR_1_NAME,
     CONF_SENSOR_2,
@@ -26,8 +27,7 @@ from .const import (
     CONF_SENSOR_5_NAME,
     CONF_SENSOR_6,
     CONF_SENSOR_6_NAME,
-    CONF_INCLUDE_IDS,
-    CONF_DECIMAL_PLACES,
+    CONF_URL,
     DEFAULT_DECIMAL_PLACES,
     MAX_PAYLOAD_SIZE,
 )
@@ -71,14 +71,16 @@ class SensorProcessor:
 
         entities_payload = []
 
-        co2_state = self.hass.states.get(current_co2_sensor) if current_co2_sensor else None
+        co2_state = (
+            self.hass.states.get(current_co2_sensor) if current_co2_sensor else None
+        )
         if co2_state:
             co2_payload = create_entity_payload(
-                co2_state, 
-                sensor_type="co2_primary", 
+                co2_state,
+                sensor_type="co2_primary",
                 custom_name=current_co2_name,
                 include_id=include_ids,
-                decimal_places=decimal_places
+                decimal_places=decimal_places,
             )
             if co2_payload:
                 co2_payload["primary"] = True
@@ -107,11 +109,11 @@ class SensorProcessor:
                 sensor_state = self.hass.states.get(sensor_id.strip())
                 if sensor_state:
                     sensor_payload = create_entity_payload(
-                        sensor_state, 
-                        sensor_type=sensor_label, 
+                        sensor_state,
+                        sensor_type=sensor_label,
                         custom_name=custom_name,
                         include_id=include_ids,
-                        decimal_places=decimal_places
+                        decimal_places=decimal_places,
                     )
                     if sensor_payload:
                         entities_payload.append(sensor_payload)
@@ -131,8 +133,10 @@ class SensorProcessor:
 
         timestamp = datetime.now().isoformat()
 
-        rounded_co2_value = round_sensor_value(co2_state.state, decimal_places) if co2_state else None
-        
+        rounded_co2_value = (
+            round_sensor_value(co2_state.state, decimal_places) if co2_state else None
+        )
+
         payload = {
             "merge_variables": {
                 "entities": entities_payload,
