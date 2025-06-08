@@ -10,7 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.event import async_track_time_interval
 
-from .const import CONF_CO2_SENSOR, CONF_URL, DOMAIN, MIN_TIME_BETWEEN_UPDATES
+from .const import CONF_CO2_SENSOR, CONF_UPDATE_INTERVAL_MINUTES, CONF_URL, DOMAIN, MIN_TIME_BETWEEN_UPDATES
 from .sensor_processor import SensorProcessor
 
 _LOGGER = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         url = config.get(CONF_URL)
         co2_sensor = config.get(CONF_CO2_SENSOR)
         update_interval_minutes = config.get(
-            "update_interval", MIN_TIME_BETWEEN_UPDATES
+            CONF_UPDATE_INTERVAL_MINUTES, MIN_TIME_BETWEEN_UPDATES
         )
 
         update_interval_seconds = update_interval_minutes * 60

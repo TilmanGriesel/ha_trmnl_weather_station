@@ -37,11 +37,14 @@ from .const import (
     CONF_SENSOR_5_NAME,
     CONF_SENSOR_6,
     CONF_SENSOR_6_NAME,
+    CONF_UPDATE_INTERVAL_MINUTES,
     CONF_URL,
     DEFAULT_DECIMAL_PLACES,
     DEFAULT_UPDATE_INTERVAL,
     DEFAULT_URL,
     DOMAIN,
+    MAX_UPDATE_INTERVAL,
+    MIN_UPDATE_INTERVAL,
     SENSOR_DEVICE_CLASSES,
 )
 
@@ -115,12 +118,12 @@ def create_basic_schema(defaults: dict = None) -> vol.Schema:
         ): EntitySelector(EntitySelectorConfig(filter=co2_filter)),
         vol.Optional(CONF_CO2_NAME, default=defaults.get(CONF_CO2_NAME, "CO2")): str,
         vol.Optional(
-            "update_interval",
-            default=defaults.get("update_interval", DEFAULT_UPDATE_INTERVAL),
+            CONF_UPDATE_INTERVAL_MINUTES,
+            default=defaults.get(CONF_UPDATE_INTERVAL_MINUTES, DEFAULT_UPDATE_INTERVAL),
         ): NumberSelector(
             NumberSelectorConfig(
-                min=5,
-                max=1440,
+                min=MIN_UPDATE_INTERVAL,
+                max=MAX_UPDATE_INTERVAL,
                 step=5,
                 unit_of_measurement="minutes",
                 mode=NumberSelectorMode.SLIDER,
@@ -272,8 +275,8 @@ class TrmnlWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
             description_placeholders={
                 "url_example": DEFAULT_URL,
-                "min_interval": str(5),
-                "max_interval": str(24),
+                "min_interval": str(MIN_UPDATE_INTERVAL),
+                "max_interval": str(MAX_UPDATE_INTERVAL // 60),  # Convert to hours
             },
         )
 
@@ -394,7 +397,9 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
                 "current_url": current_config.get(CONF_URL, "Not set"),
                 "current_co2": current_config.get(CONF_CO2_SENSOR, "Not set"),
                 "current_interval": str(
-                    current_config.get("update_interval", DEFAULT_UPDATE_INTERVAL)
+                    current_config.get(
+                        CONF_UPDATE_INTERVAL_MINUTES, DEFAULT_UPDATE_INTERVAL
+                    )
                 ),
                 "current_decimal_places": str(
                     current_config.get(CONF_DECIMAL_PLACES, DEFAULT_DECIMAL_PLACES)
@@ -451,13 +456,15 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
 
         schema_dict[
             vol.Optional(
-                "update_interval",
-                default=defaults.get("update_interval", DEFAULT_UPDATE_INTERVAL),
+                CONF_UPDATE_INTERVAL_MINUTES,
+                default=defaults.get(
+                    CONF_UPDATE_INTERVAL_MINUTES, DEFAULT_UPDATE_INTERVAL
+                ),
             )
         ] = NumberSelector(
             NumberSelectorConfig(
-                min=5,
-                max=1440,
+                min=MIN_UPDATE_INTERVAL,
+                max=MAX_UPDATE_INTERVAL,
                 step=5,
                 unit_of_measurement="minutes",
                 mode=NumberSelectorMode.SLIDER,
