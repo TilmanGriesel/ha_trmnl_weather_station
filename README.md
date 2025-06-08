@@ -43,6 +43,10 @@ If you find Home Assistant Weather Station useful, [leaving a star](https://gith
 
 After a restart of Home Assistant, this integration is configurable by via "Add Integration" at "Devices & Services" like any core integration. Select `TRMNL Weather Station` and follow the instructions. The `TRMNL Webhook URL` field is the `Webhook URL` you copied earlier.
 
+![product dark](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/product_dark.png?raw=true)
+
+---
+
 ![setup_speedrun](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/setup/ha_setup_speedrun.gif?raw=true)
 
 ---
