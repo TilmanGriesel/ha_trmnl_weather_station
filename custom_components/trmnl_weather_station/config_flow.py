@@ -20,6 +20,7 @@ from .const import (
     DOMAIN,
     CONF_URL,
     MIN_TIME_BETWEEN_UPDATES,
+    DEFAULT_UPDATE_INTERVAL,
     CONF_CO2_SENSOR,
     CONF_CO2_NAME,
     CONF_SENSOR_1,
@@ -34,6 +35,7 @@ from .const import (
     CONF_SENSOR_5_NAME,
     CONF_SENSOR_6,
     CONF_SENSOR_6_NAME,
+    CONF_INCLUDE_IDS,
     DEFAULT_URL,
     SENSOR_DEVICE_CLASSES,
 )
@@ -125,8 +127,8 @@ def create_basic_schema(defaults: dict = None) -> vol.Schema:
         vol.Optional(CONF_CO2_NAME, default=defaults.get(CONF_CO2_NAME, "CO2")): str,
         vol.Optional(
             "update_interval",
-            default=defaults.get("update_interval", MIN_TIME_BETWEEN_UPDATES),
-        ): vol.All(vol.Coerce(int), vol.Range(min=300, max=86400)),
+            default=defaults.get("update_interval", DEFAULT_UPDATE_INTERVAL),
+        ): vol.All(vol.Coerce(int), vol.Range(min=5, max=1440)),  # 5 minutes to 24 hours
     }
 
     return vol.Schema(schema_dict)
@@ -175,6 +177,9 @@ def create_sensors_schema(defaults: dict = None) -> vol.Schema:
         
         # Name fields always get defaults (empty string is fine)
         schema_dict[vol.Optional(name_key, default=defaults.get(name_key, ""))] = str
+
+    # Add the include IDs switch
+    schema_dict[vol.Optional(CONF_INCLUDE_IDS, default=defaults.get(CONF_INCLUDE_IDS, False))] = bool
 
     return vol.Schema(schema_dict)
 
@@ -247,7 +252,7 @@ class TrmnlWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         This is step 1/2 where users configure the essential settings:
         - TRMNL webhook URL
         - Required CO2 sensor
-        - Update interval
+        - Update interval (in minutes)
 
         Args:
             user_input: The data submitted by the user, if any
@@ -295,10 +300,8 @@ class TrmnlWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
             description_placeholders={
                 "url_example": DEFAULT_URL,
-                "min_interval": str(
-                    MIN_TIME_BETWEEN_UPDATES // 60
-                ),  # Convert to minutes
-                "max_interval": str(86400 // 3600),  # Convert to hours
+                "min_interval": str(5),  # 5 minutes minimum
+                "max_interval": str(24),  # 24 hours maximum
             },
         )
 
@@ -306,7 +309,8 @@ class TrmnlWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the sensors configuration step.
 
         This is step 2/2 where users can optionally add up to 6 additional
-        sensors beyond the required CO2 sensor.
+        sensors beyond the required CO2 sensor, and configure whether to
+        include entity IDs in the payload.
 
         Args:
             user_input: The data submitted by the user, if any
@@ -464,8 +468,7 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
                 "current_url": current_config.get(CONF_URL, "Not set"),
                 "current_co2": current_config.get(CONF_CO2_SENSOR, "Not set"),
                 "current_interval": str(
-                    current_config.get("update_interval", MIN_TIME_BETWEEN_UPDATES)
-                    // 60
+                    current_config.get("update_interval", DEFAULT_UPDATE_INTERVAL)
                 ),
             },
         )
@@ -492,8 +495,8 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
             ): str,
             vol.Optional(
                 "update_interval",
-                default=defaults.get("update_interval", MIN_TIME_BETWEEN_UPDATES),
-            ): vol.All(vol.Coerce(int), vol.Range(min=300, max=86400)),
+                default=defaults.get("update_interval", DEFAULT_UPDATE_INTERVAL),
+            ): vol.All(vol.Coerce(int), vol.Range(min=5, max=1440)),  # 5 minutes to 24 hours
         }
 
         # Add sensor fields, only setting defaults if they have actual values
@@ -517,6 +520,9 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
             
             # Name fields always get defaults (empty string is fine)
             schema_dict[vol.Optional(name_key, default=defaults.get(name_key, ""))] = str
+
+        # Add the include IDs switch
+        schema_dict[vol.Optional(CONF_INCLUDE_IDS, default=defaults.get(CONF_INCLUDE_IDS, False))] = bool
 
         return vol.Schema(schema_dict)
 

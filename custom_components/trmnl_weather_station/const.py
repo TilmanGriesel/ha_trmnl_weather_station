@@ -16,9 +16,11 @@ CONF_SENSOR_5 = "sensor_5"
 CONF_SENSOR_5_NAME = "sensor_5_name"  # Custom name for sensor 5
 CONF_SENSOR_6 = "sensor_6"
 CONF_SENSOR_6_NAME = "sensor_6_name"  # Custom name for sensor 6
+CONF_INCLUDE_IDS = "include_ids"  # Switch to include entity IDs in payload
 
 DEFAULT_URL = ""
-MIN_TIME_BETWEEN_UPDATES = 1800  # 30 minutes
+MIN_TIME_BETWEEN_UPDATES = 30  # 30 minutes
+DEFAULT_UPDATE_INTERVAL = 30  # Default 30 minutes
 
 # API limit for TRMNL
 MAX_PAYLOAD_SIZE = 2048  # 2KB max payload size

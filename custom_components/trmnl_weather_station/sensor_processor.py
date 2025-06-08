@@ -26,6 +26,7 @@ from .const import (
     CONF_SENSOR_5_NAME,
     CONF_SENSOR_6,
     CONF_SENSOR_6_NAME,
+    CONF_INCLUDE_IDS,
     MAX_PAYLOAD_SIZE,
 )
 from .payload_utils import create_entity_payload, estimate_payload_size
@@ -62,6 +63,7 @@ class SensorProcessor:
         current_sensor_5_name = current_config.get(CONF_SENSOR_5_NAME)
         current_sensor_6 = current_config.get(CONF_SENSOR_6)
         current_sensor_6_name = current_config.get(CONF_SENSOR_6_NAME)
+        include_ids = current_config.get(CONF_INCLUDE_IDS, False)
 
         entities_payload = []
 
@@ -69,7 +71,10 @@ class SensorProcessor:
         co2_state = self.hass.states.get(current_co2_sensor) if current_co2_sensor else None
         if co2_state:
             co2_payload = create_entity_payload(
-                co2_state, sensor_type="co2_primary", custom_name=current_co2_name
+                co2_state, 
+                sensor_type="co2_primary", 
+                custom_name=current_co2_name,
+                include_id=include_ids
             )
             if co2_payload:
                 co2_payload["primary"] = True  # Mark CO2 as primary sensor
@@ -99,7 +104,10 @@ class SensorProcessor:
                 sensor_state = self.hass.states.get(sensor_id.strip())
                 if sensor_state:
                     sensor_payload = create_entity_payload(
-                        sensor_state, sensor_type=sensor_label, custom_name=custom_name
+                        sensor_state, 
+                        sensor_type=sensor_label, 
+                        custom_name=custom_name,
+                        include_id=include_ids
                     )
                     if sensor_payload:
                         entities_payload.append(sensor_payload)

@@ -36,7 +36,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
         url = config.get(CONF_URL)
         co2_sensor = config.get(CONF_CO2_SENSOR)
-        update_interval = config.get("update_interval", MIN_TIME_BETWEEN_UPDATES)
+        update_interval_minutes = config.get("update_interval", MIN_TIME_BETWEEN_UPDATES)
+
+        # Convert minutes to seconds for internal use
+        update_interval_seconds = update_interval_minutes * 60
 
         if not url:
             _LOGGER.error("No URL configured, cannot set up integration")
@@ -47,10 +50,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             return False
 
         _LOGGER.debug(
-            "Configuration - URL: %s, CO2: %s, Interval: %ds",
+            "Configuration - URL: %s, CO2: %s, Interval: %d minutes (%d seconds)",
             url,
             co2_sensor,
-            update_interval,
+            update_interval_minutes,
+            update_interval_seconds,
         )
 
     except Exception as ex:
@@ -60,10 +64,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Create sensor processor instance
     processor = SensorProcessor(hass, entry)
 
-    # Set up periodic updates
-    _LOGGER.debug("Setting up periodic timer for %d seconds", update_interval)
+    # Set up periodic updates using seconds internally
+    _LOGGER.debug("Setting up periodic timer for %d seconds (%d minutes)", 
+                 update_interval_seconds, update_interval_minutes)
     remove_timer = async_track_time_interval(
-        hass, processor.process_sensors, timedelta(seconds=update_interval)
+        hass, processor.process_sensors, timedelta(seconds=update_interval_seconds)
     )
 
     # Store the timer removal function and processor

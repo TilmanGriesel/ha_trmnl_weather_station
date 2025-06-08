@@ -14,7 +14,7 @@
           "url": "Your TRMNL webhook URL (starts with https://)",
           "co2_sensor": "Select your air quality CO₂ sensor from available sensors",
           "co2_name": "Name to display on TRMNL (e.g., 'Office CO₂', 'Living Room')",
-          "update_interval": "How often to send data to TRMNL in seconds"
+          "update_interval": "How often to send data to TRMNL in minutes (5-1440)"
         }
       },
       "sensors": {
@@ -32,7 +32,8 @@
           "sensor_5": "Sensor 5",
           "sensor_5_name": "Sensor 5 Name",
           "sensor_6": "Sensor 6",
-          "sensor_6_name": "Sensor 6 Name"
+          "sensor_6_name": "Sensor 6 Name",
+          "include_ids": "Include Entity IDs"
         },
         "data_description": {
           "sensor_1_name": "Sensor 1 display name",
@@ -40,12 +41,14 @@
           "sensor_3_name": "Sensor 3 display name",
           "sensor_4_name": "Sensor 4 display name",
           "sensor_5_name": "Sensor 5 display name",
-          "sensor_6_name": "Sensor 6 display name"
+          "sensor_6_name": "Sensor 6 display name",
+          "include_ids": "Include Home Assistant entity IDs in payload (useful for debugging or advanced templates)"
         }
       }
     },
     "error": {
       "invalid_url": "Invalid URL format. Must start with http:// or https://",
+      "invalid_entity": "One or more selected sensors could not be found in Home Assistant",
       "cannot_connect": "Unable to connect to TRMNL. Please check your webhook URL.",
       "unknown": "An unexpected error occurred during setup. Please try again."
     },
@@ -57,7 +60,7 @@
     "step": {
       "init": {
         "title": "TRMNL Weather Configuration",
-        "description": "**Update Your Settings**\n\nModify your TRMNL Weather Station configuration. You can change sensors, display names, or update frequency.",
+        "description": "**Update Your Settings**\n\nModify your TRMNL Weather Station configuration. You can change sensors, display names, update frequency, or toggle entity ID inclusion.",
         "data": {
           "url": "TRMNL Webhook URL",
           "co2_sensor": "CO₂ Sensor",
@@ -74,13 +77,15 @@
           "sensor_5_name": "Display Name 5",
           "sensor_6": "Sensor 6",
           "sensor_6_name": "Display Name 6",
-          "update_interval": "Update Frequency"
+          "update_interval": "Update Frequency",
+          "include_ids": "Include Entity IDs"
         },
         "data_description": {
           "url": "Current: {current_url}",
           "co2_sensor": "Current: {current_co2}",
           "co2_name": "Name shown on TRMNL display",
-          "update_interval": "Current: {current_interval} minutes"
+          "update_interval": "Current: {current_interval} minutes",
+          "include_ids": "Include Home Assistant entity IDs in the data sent to TRMNL"
         }
       }
     }
