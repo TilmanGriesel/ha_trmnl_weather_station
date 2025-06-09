@@ -44,15 +44,6 @@ After a restart of Home Assistant, this integration is configurable by via "Add 
 
 ![product dark](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/product_dark.png?raw=true)
 
-## Why I am doing this
-I’ve always believed in sharing, especially when it comes to knowledge and skills. Whether you're a professional or a hobbyist, I think we build stronger, more sustainable communities when we openly share what we create and support each other in return. A few years ago, I built a Home Assistant e-ink display to show sensor data. It worked well, but setting it up meant flashing a microcontroller and this is not exactly beginner-friendly and thus exclude many people from technological freedom. Back then, I really wished there was an easier way for others to do the same without diving deep into technical setup and even considered starting an open source project but then life happened.
-
-And that’s why I think TRMNL is such a great solution. It makes it simple to display sensor data with minimal setup, saving a lot of time and effort for anyone looking to do the same. It lowers the barrier and makes home automation more accessible. What’s even better is that it’s open-source. So even if the company behind it stops supporting the product, the community can keep it going. That means it’s not just another piece of tech destined for the junk drawer, it's something people can continue to build on.
-
-Feel free to checkout my other little projects:
-- https://github.com/TilmanGriesel/graphite - A Calm and Clean Theme for Home Assistant
-- https://github.com/TilmanGriesel/chipper - Small AI interface for tinkerers (Ollama, RAG, Python)
-
 ---
 
 ### Home Assistant Setup Demo
@@ -70,6 +61,17 @@ Feel free to checkout my other little projects:
 - Refactor and clean up the codebase, simplifying where possible and expanding configuration options as needed.
 - Add automated tests and refactor logic into classes to improve maintainability and structure.
 - Expand and dynamically adapt TRMNL display output based on sensor input.
+
+---
+
+## Personal note
+I deeply believe in sharing, especially when it comes to knowledge and skills. Whether you're a professional or a hobbyist, I think we build stronger, more sustainable communities when we openly share what we create and support each other in return. A few years ago, I built a Home Assistant e-ink display to show sensor data. It worked well, but setting it up meant flashing a microcontroller and this is not exactly beginner-friendly and thus exclude many people from technological freedom. Back then, I really wished there was an easier way for others to do the same without diving deep into technical setup and even considered starting an open source project but then life happened.
+
+And that’s why I think TRMNL is such a great solution. It makes it simple to display sensor data with minimal setup, saving a lot of time and effort for anyone looking to do the same. It lowers the barrier and makes home automation more accessible. What’s even better is that it’s open-source. So even if the company behind it stops supporting the product, the community can keep it going. That means it’s not just another piece of tech destined for the junk drawer, it's something people can continue to build on.
+
+Feel free to checkout my other little projects:
+- https://github.com/TilmanGriesel/graphite - A Calm and Clean Theme for Home Assistant
+- https://github.com/TilmanGriesel/chipper - Small AI interface for tinkerers (Ollama, RAG, Python)
 
 ---
 
