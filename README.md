@@ -6,6 +6,8 @@ This lightweight Home Assistant integration delivers your data to the TRMNL E-In
 
 ![product](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/product.png?raw=true)
 
+Don't know what a TRMNL display is? You can [learn more about it here](https://usetrmnl.com?ref=griesel).
+
 ## What It Does
 
 Send live sensor data (like CO2, temperature, humidity, and more) to a TRMNL E-Ink display. Works with Netatmo and other Home Assistant-compatible devices with a few simple installation steps.
