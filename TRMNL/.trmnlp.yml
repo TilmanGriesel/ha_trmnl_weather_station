@@ -53,6 +53,7 @@ variables:
       val: 2
       type: "sensor_6"
   co2_value: 820
+  weather_code: "partlycloudy"
   timestamp: "2025-06-14T10:14:25.085591"
   trmnl:
     plugin_settings:
