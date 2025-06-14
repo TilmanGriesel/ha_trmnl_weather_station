@@ -3,10 +3,10 @@
     "step": {
       "user": {
         "title": "TRMNL Weather Station Setup",
-        "description": "**Step 1 of 2: Basic Configuration**\n\nConfigure the essential settings for your TRMNL display. You'll need your webhook URL and a CO₂ sensor.",
+        "description": "**Step 1 of 2: Basic Configuration**\n\nConfigure the essential settings for your TRMNL display.",
         "data": {
           "url": "TRMNL Webhook URL",
-          "co2_sensor": "CO₂ Sensor (Required)",
+          "co2_sensor": "CO₂ Sensor",
           "co2_name": "CO₂ Display Name",
           "update_interval_minutes": "Update Frequency",
           "decimal_places": "Decimal Places"
@@ -21,8 +21,9 @@
       },
       "sensors": {
         "title": "Additional Sensors",
-        "description": "**Step 2 of 2: Optional Sensors**\n\nAdd up to 6 additional sensors (temperature, humidity, pressure, etc.). All sensors in this step are optional - you can skip any you don't need.\n\nAll sensor values will be rounded to {decimal_places} decimal places.",
+        "description": "**Step 2 of 2: Optional Sensors & Weather**\n\nAdd a weather provider and up to 6 additional sensors (temperature, humidity, pressure, etc.). All sensors in this step are optional - you can skip any you don't need.\n\nAll sensor values will be rounded to {decimal_places} decimal places.",
         "data": {
+          "weather_provider": "Weather Provider (Optional)",
           "sensor_1": "Sensor 1",
           "sensor_1_name": "Sensor 1 Name",
           "sensor_2": "Sensor 2",
@@ -38,6 +39,7 @@
           "include_ids": "Include Entity IDs"
         },
         "data_description": {
+          "weather_provider": "Select a weather entity to include weather conditions (sunny, rainy, etc.) in the data sent to TRMNL",
           "sensor_1_name": "Sensor 1 display name",
           "sensor_2_name": "Sensor 2 display name",
           "sensor_3_name": "Sensor 3 display name",
@@ -67,6 +69,7 @@
           "url": "TRMNL Webhook URL",
           "co2_sensor": "CO₂ Sensor",
           "co2_name": "CO₂ Display Name",
+          "weather_provider": "Weather Provider (Optional)",
           "sensor_1": "Sensor 1",
           "sensor_1_name": "Display Name 1",
           "sensor_2": "Sensor 2",
@@ -87,6 +90,7 @@
           "url": "Current: {current_url}",
           "co2_sensor": "Current: {current_co2}",
           "co2_name": "Name shown on TRMNL display",
+          "weather_provider": "Select a weather entity to include weather conditions in the data sent to TRMNL",
           "update_interval_minutes": "Current: {current_interval} minutes",
           "decimal_places": "Current: {current_decimal_places} decimal places. Controls precision of all sensor values.",
           "include_ids": "Include Home Assistant entity IDs in the data sent to TRMNL"

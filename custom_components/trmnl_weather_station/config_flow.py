@@ -39,6 +39,7 @@ from .const import (
     CONF_SENSOR_6_NAME,
     CONF_UPDATE_INTERVAL_MINUTES,
     CONF_URL,
+    CONF_WEATHER_PROVIDER,
     DEFAULT_DECIMAL_PLACES,
     DEFAULT_UPDATE_INTERVAL,
     DEFAULT_URL,
@@ -51,8 +52,8 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
-def get_entity_selectors() -> tuple[dict, dict]:
-    """Create entity selectors for CO2 and general sensors."""
+def get_entity_selectors() -> tuple[dict, dict, dict]:
+    """Create entity selectors for CO2, general sensors, and weather."""
     co2_filter = {
         "domain": ["sensor"],
         "device_class": ["carbon_dioxide"],
@@ -64,7 +65,11 @@ def get_entity_selectors() -> tuple[dict, dict]:
         # "device_class": SENSOR_DEVICE_CLASSES,
     }
 
-    return co2_filter, sensor_filter
+    weather_filter = {
+        "domain": ["weather"],
+    }
+
+    return co2_filter, sensor_filter, weather_filter
 
 
 def get_sensor_friendly_name(hass: HomeAssistant, entity_id: str) -> str:
@@ -84,6 +89,8 @@ def clean_sensor_data(data: dict) -> dict:
     cleaned = data.copy()
 
     sensor_keys = [
+        CONF_CO2_SENSOR,
+        CONF_WEATHER_PROVIDER,
         CONF_SENSOR_1,
         CONF_SENSOR_2,
         CONF_SENSOR_3,
@@ -109,13 +116,20 @@ def create_basic_schema(defaults: dict = None) -> vol.Schema:
     if defaults is None:
         defaults = {}
 
-    co2_filter, _ = get_entity_selectors()
+    co2_filter, _, _ = get_entity_selectors()
 
     schema_dict = {
         vol.Required(CONF_URL, default=defaults.get(CONF_URL, DEFAULT_URL)): str,
-        vol.Required(
-            CONF_CO2_SENSOR, default=defaults.get(CONF_CO2_SENSOR)
-        ): EntitySelector(EntitySelectorConfig(filter=co2_filter)),
+    }
+    
+    # Handle CO2 sensor similar to additional sensors
+    co2_default = defaults.get(CONF_CO2_SENSOR)
+    if co2_default and co2_default.strip():
+        schema_dict[vol.Optional(CONF_CO2_SENSOR, default=co2_default)] = EntitySelector(EntitySelectorConfig(filter=co2_filter))
+    else:
+        schema_dict[vol.Optional(CONF_CO2_SENSOR)] = EntitySelector(EntitySelectorConfig(filter=co2_filter))
+    
+    schema_dict.update({
         vol.Optional(CONF_CO2_NAME, default=defaults.get(CONF_CO2_NAME, "CO2")): str,
         vol.Optional(
             CONF_UPDATE_INTERVAL_MINUTES,
@@ -129,7 +143,7 @@ def create_basic_schema(defaults: dict = None) -> vol.Schema:
                 mode=NumberSelectorMode.SLIDER,
             )
         ),
-    }
+    })
 
     return vol.Schema(schema_dict)
 
@@ -139,7 +153,7 @@ def create_sensors_schema(defaults: dict = None) -> vol.Schema:
     if defaults is None:
         defaults = {}
 
-    _, sensor_filter = get_entity_selectors()
+    _, sensor_filter, weather_filter = get_entity_selectors()
 
     sensor_selector = EntitySelector(
         EntitySelectorConfig(
@@ -150,7 +164,13 @@ def create_sensors_schema(defaults: dict = None) -> vol.Schema:
 
     schema_dict = {}
 
-    # Add sensor configurations first
+    # Handle weather provider similar to other sensors
+    weather_default = defaults.get(CONF_WEATHER_PROVIDER)
+    if weather_default and weather_default.strip():
+        schema_dict[vol.Optional(CONF_WEATHER_PROVIDER, default=weather_default)] = EntitySelector(EntitySelectorConfig(filter=weather_filter))
+    else:
+        schema_dict[vol.Optional(CONF_WEATHER_PROVIDER)] = EntitySelector(EntitySelectorConfig(filter=weather_filter))
+
     sensor_configs = [
         (CONF_SENSOR_1, CONF_SENSOR_1_NAME),
         (CONF_SENSOR_2, CONF_SENSOR_2_NAME),
@@ -196,6 +216,11 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, str]:
         co2_state = hass.states.get(data[CONF_CO2_SENSOR])
         if not co2_state:
             raise InvalidEntity(f"CO2 sensor {data[CONF_CO2_SENSOR]} not found")
+
+    if data.get(CONF_WEATHER_PROVIDER):
+        weather_state = hass.states.get(data[CONF_WEATHER_PROVIDER])
+        if not weather_state:
+            raise InvalidEntity(f"Weather provider {data[CONF_WEATHER_PROVIDER]} not found")
 
     sensor_keys = [
         CONF_SENSOR_1,
@@ -409,7 +434,7 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
 
     def _create_combined_options_schema(self, defaults: dict) -> vol.Schema:
         """Create the combined options schema with all fields."""
-        co2_filter, sensor_filter = get_entity_selectors()
+        co2_filter, sensor_filter, weather_filter = get_entity_selectors()
 
         sensor_selector = EntitySelector(
             EntitySelectorConfig(
@@ -421,13 +446,23 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
         # Basic configuration fields
         schema_dict = {
             vol.Required(CONF_URL, default=defaults.get(CONF_URL, DEFAULT_URL)): str,
-            vol.Required(
-                CONF_CO2_SENSOR, default=defaults.get(CONF_CO2_SENSOR)
-            ): EntitySelector(EntitySelectorConfig(filter=co2_filter)),
-            vol.Optional(
-                CONF_CO2_NAME, default=defaults.get(CONF_CO2_NAME, "CO2")
-            ): str,
         }
+        
+        # Handle CO2 sensor similar to other sensors in options
+        co2_default = defaults.get(CONF_CO2_SENSOR)
+        if co2_default and co2_default.strip() and co2_default != "None":
+            schema_dict[vol.Optional(CONF_CO2_SENSOR, default=co2_default)] = EntitySelector(EntitySelectorConfig(filter=co2_filter))
+        else:
+            schema_dict[vol.Optional(CONF_CO2_SENSOR)] = EntitySelector(EntitySelectorConfig(filter=co2_filter))
+            
+        schema_dict[vol.Optional(CONF_CO2_NAME, default=defaults.get(CONF_CO2_NAME, "CO2"))] = str
+
+        # Weather provider - handle similar to other sensors
+        weather_default = defaults.get(CONF_WEATHER_PROVIDER)
+        if weather_default and weather_default.strip() and weather_default != "None":
+            schema_dict[vol.Optional(CONF_WEATHER_PROVIDER, default=weather_default)] = EntitySelector(EntitySelectorConfig(filter=weather_filter))
+        else:
+            schema_dict[vol.Optional(CONF_WEATHER_PROVIDER)] = EntitySelector(EntitySelectorConfig(filter=weather_filter))
 
         # Sensor configuration fields
         sensor_configs = [

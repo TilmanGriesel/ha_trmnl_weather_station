@@ -19,6 +19,7 @@ CONF_SENSOR_6_NAME = "sensor_6_name"
 CONF_INCLUDE_IDS = "include_ids"
 CONF_DECIMAL_PLACES = "decimal_places"
 CONF_UPDATE_INTERVAL_MINUTES = "update_interval_minutes"
+CONF_WEATHER_PROVIDER = "weather_provider"
 
 DEFAULT_URL = ""
 MIN_TIME_BETWEEN_UPDATES = 10

@@ -29,6 +29,7 @@ from .const import (
     CONF_SENSOR_6_NAME,
     CONF_UPDATE_INTERVAL_MINUTES,
     CONF_URL,
+    CONF_WEATHER_PROVIDER,
     DEFAULT_DECIMAL_PLACES,
     MAX_PAYLOAD_SIZE,
 )
@@ -53,6 +54,7 @@ class SensorProcessor:
         current_url = current_config.get(CONF_URL)
         current_co2_sensor = current_config.get(CONF_CO2_SENSOR)
         current_co2_name = current_config.get(CONF_CO2_NAME)
+        current_weather_provider = current_config.get(CONF_WEATHER_PROVIDER)
         current_sensor_1 = current_config.get(CONF_SENSOR_1)
         current_sensor_1_name = current_config.get(CONF_SENSOR_1_NAME)
         current_sensor_2 = current_config.get(CONF_SENSOR_2)
@@ -95,6 +97,19 @@ class SensorProcessor:
         else:
             _LOGGER.warning("CO2 sensor %s not found", current_co2_sensor)
             return
+
+        weather_code = None
+        if current_weather_provider:
+            weather_state = self.hass.states.get(current_weather_provider)
+            if weather_state:
+                weather_code = weather_state.state
+                _LOGGER.debug(
+                    "Weather provider %s has condition: %s",
+                    current_weather_provider,
+                    weather_code,
+                )
+            else:
+                _LOGGER.warning("Weather provider %s not found", current_weather_provider)
 
         additional_sensors = [
             (current_sensor_1, current_sensor_1_name, "sensor_1"),
@@ -149,6 +164,7 @@ class SensorProcessor:
                     if co2_state
                     else "ppm"
                 ),
+                "weather_code": weather_code,
             }
         }
 
@@ -178,6 +194,7 @@ class SensorProcessor:
                             if co2_state
                             else "ppm"
                         ),
+                        "weather_code": weather_code,
                     }
                 }
                 if estimate_payload_size(test_payload) <= MAX_PAYLOAD_SIZE:
