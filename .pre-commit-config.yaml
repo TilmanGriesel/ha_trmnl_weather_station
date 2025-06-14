@@ -32,3 +32,10 @@ repos:
       - id: mixed-line-ending
         stages: [pre-commit]
         args: [--fix=lf]
+
+  # EditorConfig
+  - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
+    rev: 2.7.3
+    hooks:
+      - id: editorconfig-checker
+        stages: [pre-commit]
