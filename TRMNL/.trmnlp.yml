@@ -1,0 +1,63 @@
+---
+# auto-reload when files change
+watch:
+  - src
+  - .trmnlp.yml
+
+# values of custom fields
+custom_fields:
+  # Add your custom fields here
+
+# Time zone for development
+time_zone: Europe/Berlin
+
+# override variables for development
+variables:
+  count: 7
+  co2_unit: "ppm"
+  entities:
+    - n: "CO2"
+      u: "ppm"
+      val: 690
+      type: "co2_primary"
+      primary: true
+      device_class: "carbon_dioxide"
+    - n: "Office"
+      u: "°C"
+      val: 20.5
+      type: "sensor_1"
+      device_class: "temperature"
+    - n: "Office"
+      u: "%"
+      val: 49
+      type: "sensor_2"
+      device_class: "humidity"
+    - n: "Outdoor"
+      u: "°C"
+      val: 22.5
+      type: "sensor_3"
+      device_class: "temperature"
+    - n: "Outdoor"
+      u: "%"
+      val: 45
+      type: "sensor_4"
+      device_class: "humidity"
+    - i: "mdi:temperature-celsius"
+      n: "Dewpoint"
+      u: "°C"
+      val: 14.6
+      type: "sensor_5"
+      device_class: "temperature"
+    - i: "mdi:flower-pollen"
+      n: "Grass Pollen"
+      val: 2
+      type: "sensor_6"
+  co2_value: 690
+  timestamp: "2025-06-14T10:14:25.085591"
+  trmnl:
+    plugin_settings:
+      instance_name: "Home Assistant Weather Station"
+      strategy: "webhook"
+      dark_mode: "no"
+      polling_headers: ""
+      polling_url: ""
