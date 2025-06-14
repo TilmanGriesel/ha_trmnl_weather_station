@@ -5,7 +5,7 @@ on:
   # pull_request:
   # schedule:
   #   - cron: "0 0 * * *"
-  
+
   # Manual trigger only
   workflow_dispatch:
 
