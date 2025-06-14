@@ -48,7 +48,111 @@
   </div>
 </div>
 
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/pattern-fill.js"></script>
 <script type="text/javascript">
+    // CO2 level in ppm
+  var co2Level = 1200;
+
+  function co2Rating(level) {
+    if (level < 800) {
+      return "Excellent";
+    } else if (level < 1000) {
+      return "Good";
+    } else if (level < 1500) {
+      return "Fair";
+    } else {
+      return "Poor";
+    }
+  }
+
+  function createSimpleCO2Gauge(level, height) {
+    Highcharts.chart('co2-gauge', {
+      chart: {
+        type: "gauge",
+        height: height,
+        width: height
+      },
+      title: {
+        text: null
+      },
+      pane: {
+        startAngle: -150,
+        endAngle: 150,
+        background: {
+          backgroundColor: "transparent",
+          borderWidth: 0
+        }
+      },
+      plotOptions: {
+        gauge: {
+          animation: false,
+          pivot: {
+            backgroundColor: "transparent"
+          },
+          dial: {
+            backgroundColor: "transparent",
+            baseWidth: 0,
+          },
+        }
+      },
+      yAxis: {
+        min: 400,
+        max: 2000,
+        minorTickInterval: 0,
+        tickColor: "#ffffff",
+        tickLength: 0,
+        tickWidth: 0,
+        lineWidth: 0,
+        title: {
+          text: null
+        },
+        labels: {
+          enabled: false
+        },
+        plotBands: [
+          {
+            from: 400,
+            to: 2000,
+            color: {
+              pattern: {
+                image: "https://usetrmnl.com/images/grayscale/gray-4.png",
+                width: 8,
+                height: 8
+              }
+            },
+            innerRadius: '85%',
+            borderRadius: '50%'
+          },
+          {
+            from: 400,
+            to: level,
+            color: '#000000',
+            innerRadius: "85%",
+            borderRadius: "50%"
+          }
+        ]
+      },
+      series: [{
+        name: "CO₂",
+        data: [level],
+        dataLabels: {
+          format: '{point.y} ppm<br/>' + co2Rating(level),
+          borderWidth: 0,
+          style: {
+            fontSize: "16px",
+            textAlign: "center"
+          },
+          y: -25
+        }
+      }],
+      credits: {
+        enabled: false
+      }
+    });
+  }
+
   function createCO2Gauge(level, maxWidth) {
     Highcharts.chart('co2-gauge', {
       chart: {
@@ -146,5 +250,5 @@
     });
   }
 
-  createCO2Gauge(getCO2Level());
+  createCO2Gauge({{co2_value}});
 </script>

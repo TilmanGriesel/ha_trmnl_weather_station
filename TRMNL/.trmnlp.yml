@@ -18,7 +18,7 @@ variables:
   entities:
     - n: "CO2"
       u: "ppm"
-      val: 690
+      val: 820
       type: "co2_primary"
       primary: true
       device_class: "carbon_dioxide"
@@ -52,7 +52,7 @@ variables:
       n: "Grass Pollen"
       val: 2
       type: "sensor_6"
-  co2_value: 690
+  co2_value: 820
   timestamp: "2025-06-14T10:14:25.085591"
   trmnl:
     plugin_settings:
