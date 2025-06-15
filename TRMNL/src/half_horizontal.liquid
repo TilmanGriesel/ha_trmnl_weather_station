@@ -1,6 +1,33 @@
+<style>
+  .sensor-value {
+    font-weight: 600 !important;
+  }
+  .gauge-container {
+    position: relative;
+    display: inline-block;
+  }
+  .weather-icon {
+    position: absolute;
+    top: 68%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+  }
+</style>
 <div class="mashup mashup--1Lx1R">
   <div class="layout">
-    <div id="co2-gauge"></div>
+    <div class="gauge-container">
+      <div id="co2-gauge"></div>
+      {% assign weather_icon = '' %}
+      {% for icon_pair in weather_icon_map %}
+      {% assign icon_data = icon_pair | split: ':' %}
+      {% if icon_data[0] == weather_code %}
+      {% assign weather_icon = icon_data[1] %}
+      {% break %}
+      {% endif %}
+      {% endfor %}
+      <span class="weather-icon mdi {{ weather_icon }}"></span>
+    </div>
   </div>
   <div class="layout">
     <div class="grid grid--cols-2">
@@ -20,7 +47,7 @@
       {% endif %}
       <div class="item">
         <span class="label">
-          <span class="weather-icon mdi {{ entity_icon }}"</span>
+          <span class="mdi {{ entity_icon }}"</span>
           {{ entity.n }}
         </span>
         <div class="content">
@@ -40,5 +67,5 @@
 </div>
 
 <script type="text/javascript">
-  createSimpleCO2Gauge(getCO2Level(), 220);
+  createSimpleCO2Gauge({{ co2_value }}, 220);
 </script>
