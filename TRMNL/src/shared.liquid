@@ -1,4 +1,5 @@
 {% assign icon_map = 'apparent_power:mdi-flash,aqi:mdi-air-filter,area:mdi-vector-square,atmospheric_pressure:mdi-gauge,battery:mdi-battery,blood_glucose_concentration:mdi-water-percent,carbon_dioxide:mdi-molecule-co2,carbon_monoxide:mdi-molecule,conductivity:mdi-alpha-c-circle,current:mdi-current-ac,data_rate:mdi-server-network,data_size:mdi-database,date:mdi-calendar,distance:mdi-ruler,duration:mdi-timer,energy_distance:mdi-factory,energy_storage:mdi-battery-charging,enum:mdi-format-list-bulleted,frequency:mdi-sine-wave,gas:mdi-gas-cylinder,humidity:mdi-water-percent,illuminance:mdi-brightness-6,irradiance:mdi-weather-sunny,moisture:mdi-water,monetary:mdi-currency-usd,nitrogen_dioxide:mdi-molecule,nitrogen_monoxide:mdi-molecule,nitrous_oxide:mdi-molecule,ozone:mdi-shield-sun,pH:mdi-water,pm1:mdi-air-filter,pm25:mdi-air-filter,pm10:mdi-air-filter,power:mdi-flash,power_factor:mdi-percent,precipitation:mdi-weather-pouring,precipitation_intensity:mdi-weather-rainy,reactive_energy:mdi-flash-triangle,reactive_power:mdi-flash-outline,signal_strength:mdi-signal,sound_pressure:mdi-volume-high,speed:mdi-speedometer,sulphur_dioxide:mdi-molecule,temperature:mdi-thermometer,timestamp:mdi-clock-outline,volatile_organic_compounds:mdi-chemical-weapon,volatile_organic_compounds_parts:mdi-chemical-weapon,voltage:mdi-flash-circle,volume:mdi-cube,volume_flow_rate:mdi-water-pump,volume_storage:mdi-harddisk,water:mdi-water,weight:mdi-scale-bathroom,wind_direction:mdi-compass,wind_speed:mdi-weather-windy,energy:mdi-lightning-bolt,default:mdi-gauge' | split: ',' %}
+{% assign weather_icon_map = 'clear-night:mdi-weather-night,cloudy:mdi-weather-cloudy,fog:mdi-weather-fog,hail:mdi-weather-hail,lightning:mdi-weather-lightning,lightning-rainy:mdi-weather-lightning-rainy,partlycloudy:mdi-weather-partly-cloudy,pouring:mdi-weather-pouring,rainy:mdi-weather-rainy,snowy:mdi-weather-snowy,snowy-rainy:mdi-weather-snowy-rainy,sunny:mdi-weather-sunny,windy:mdi-weather-windy,windy-variant:mdi-weather-cloudy-arrow-right,exceptional:mdi-alert-circle,default:mdi-weather-cloudy' | split: ',' %}
 
 <!-- import Highcharts libraries -->
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -25,18 +26,7 @@
       return "Poor";
     }
   }
-
-  function getCO2Level() {
-    {% assign co2Level = -1 %}
-    {% for entity in entities %}
-    {% if entity.u == "ppm" %}
-    {% assign co2Level = entity.val %}
-    {% break %}
-    {% endif %}
-    {% endfor %}
-    return {{ co2Level }}
-  }
-
+  
   function createSimpleCO2Gauge(level, height) {
     Highcharts.chart('co2-gauge', {
       chart: {
