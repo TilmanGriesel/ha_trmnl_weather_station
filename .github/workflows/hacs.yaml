@@ -1,10 +1,10 @@
 name: HACS Action
 on:
   # Automatic triggers commented out - now manual only
-  # push:
-  # pull_request:
-  # schedule:
-  #   - cron: "0 0 * * *"
+  push:
+  pull_request:
+  schedule:
+   - cron: "0 0 * * *"
 
   # Manual trigger only
   workflow_dispatch:
