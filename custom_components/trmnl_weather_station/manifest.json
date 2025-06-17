@@ -9,5 +9,5 @@
   "iot_class": "cloud_push",
   "issue_tracker": "https://github.com/TilmanGriesel/ha_trmnl_weather_station/issues",
   "requirements": ["aiohttp"],
-  "version": "0.5.0"
+  "version": "0.5.1"
 }
