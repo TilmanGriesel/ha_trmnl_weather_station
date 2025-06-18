@@ -1,12 +1,19 @@
 # TRMNL Home Assistant Weather Station
+[![Open your Home Assistant instance and open this repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=TilmanGriesel&repository=ha_trmnl_weather_station&category=integration)
+[![Open your Home Assistant instance and start setting up this integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=trmnl_weather_station)
 
 Use your **TRMNL** display to monitor **live CO₂ levels and up to six custom sensors** from your **Netatmo** or other supported stations.
 
 This lightweight Home Assistant integration delivers your data to the TRMNL E-Ink display via the included plugin, for low-power, glanceable monitoring in your home.
 
+Don't know what a TRMNL display is? You can [learn more about it here](https://usetrmnl.com?ref=griesel). If you find Home Assistant Weather Station useful, [leaving a star](https://github.com/TilmanGriesel/ha_trmnl_weather_station) would be lovely and will help others discover this integration too.
+
 ![product](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/product.png?raw=true)
 
-Don't know what a TRMNL display is? You can [learn more about it here](https://usetrmnl.com?ref=griesel).
+[![Hassfest Workflow Status](https://img.shields.io/github/actions/workflow/status/TilmanGriesel/ha_trmnl_weather_station/hassfest.yaml?label=Hassfest&style=for-the-badge&colorA=000&colorB=fff)](https://github.com/TilmanGriesel/ha_trmnl_weather_station/actions/workflows/hassfest.yaml)
+[![hacs Workflow Status](https://img.shields.io/github/actions/workflow/status/TilmanGriesel/ha_trmnl_weather_station/hacs.yaml?label=hacs&style=for-the-badge&colorA=000&colorB=fff)](https://github.com/TilmanGriesel/ha_trmnl_weather_station/actions/workflows/hacs.yaml)
+[![Release](https://img.shields.io/github/v/release/TilmanGriesel/ha_trmnl_weather_station?style=for-the-badge&colorA=000&colorB=fff)](https://github.com/TilmanGriesel/ha_trmnl_weather_station/releases)
+[![Donation](https://img.shields.io/badge/Donation-Buy%20a%20TRMNL-ffd557?style=for-the-badge&colorA=000&colorB=fff)](https://usetrmnl.com?ref=griesel)  
 
 ## What It Does
 
@@ -19,17 +26,19 @@ Send live sensor data (like CO2, temperature, humidity, and more) to a TRMNL E-I
 - Custom labels
 - Plugin included
 
-If you find Home Assistant Weather Station useful, [leaving a star](https://github.com/TilmanGriesel/ha_trmnl_weather_station) would be lovely and will help others discover this integration too.
-
 ## Quickstart Guide
 
-> ⚠️ This project is currently under development, so installation is a bit manual for now and the implementation is in subject to change. Full documentation and streamlined setup will follow once it's available in the default HACS repository.
+### Step 1: Install custom Integration via HACS
 
-### Step 1: Add custom Integration via HACS
+[![Open your Home Assistant instance and open this repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=TilmanGriesel&repository=ha_trmnl_weather_station&category=integration)
+
+<details><summary>Manual setup instructions</summary>
 
 1. Open Home Assistant and navigate to **HACS > Integrations**.
 1. Click the three-dot menu (⋮) in the top-right corner and choose **Custom repositories**.
 1. Add this repository URL `https://github.com/TilmanGriesel/ha_trmnl_weather_station` as a **"Integration"** type.
+
+</details>
 
 ### Step 2: Fork Recipe to Your TRMNL Playlist
 
@@ -42,7 +51,12 @@ If you find Home Assistant Weather Station useful, [leaving a star](https://gith
 
 ### Step 3: Setup Home Assistant Integration
 
-After a restart of Home Assistant, this integration is configurable by via "Add Integration" at "Devices & Services" like any core integration. Select `TRMNL Weather Station` and follow the instructions. The `TRMNL Webhook URL` field is the `Webhook URL` you copied earlier.
+After a restart of Home Assistant, this integration is configurable by via
+1. `Add Integration` at `Devices & Services` like any core integration.
+1. Select `TRMNL Weather Station` and follow the instructions. 
+1. The `TRMNL Webhook URL` field is the `Webhook URL` you copied earlier.
+
+[![Open your Home Assistant instance and start setting up this integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=trmnl_weather_station)
 
 ![product dark](https://github.com/TilmanGriesel/ha_trmnl_weather_station/blob/main/docs/product_dark.png?raw=true)
 
@@ -56,12 +70,7 @@ After a restart of Home Assistant, this integration is configurable by via "Add 
 ---
 
 ### Future Plans
-
-- Publish the integration in the official **HACS** repository.
-  - HA Brand MR: https://github.com/home-assistant/brands/pull/7185
-  - HACS Default MR (closed): https://github.com/hacs/default/pull/3512
-- Refactor and clean up the codebase, simplifying where possible and expanding configuration options as needed.
-- Add automated tests and refactor logic into classes to improve maintainability and structure.
+- Support arbitrary gauge types.
 - Expand and dynamically adapt TRMNL display output based on sensor input.
 
 ---
