@@ -13,7 +13,7 @@ Don't know what a TRMNL display is? You can [learn more about it here](https://u
 [![Hassfest Workflow Status](https://img.shields.io/github/actions/workflow/status/TilmanGriesel/ha_trmnl_weather_station/hassfest.yaml?label=Hassfest&style=for-the-badge&colorA=000&colorB=fff)](https://github.com/TilmanGriesel/ha_trmnl_weather_station/actions/workflows/hassfest.yaml)
 [![hacs Workflow Status](https://img.shields.io/github/actions/workflow/status/TilmanGriesel/ha_trmnl_weather_station/hacs.yaml?label=hacs&style=for-the-badge&colorA=000&colorB=fff)](https://github.com/TilmanGriesel/ha_trmnl_weather_station/actions/workflows/hacs.yaml)
 [![Release](https://img.shields.io/github/v/release/TilmanGriesel/ha_trmnl_weather_station?style=for-the-badge&colorA=000&colorB=fff)](https://github.com/TilmanGriesel/ha_trmnl_weather_station/releases)
-[![Donation](https://img.shields.io/badge/Donation-Buy%20a%20TRMNL%20&%20GET%2010$%20Off-ffd557?style=for-the-badge&colorA=000&colorB=fff)](https://usetrmnl.com?ref=griesel)  
+[![Donation](https://img.shields.io/badge/Donation-Buy%20a%20TRMNL%20&%20GET%2010$%20Off-ffd557?style=for-the-badge&colorA=000&colorB=fff)](https://usetrmnl.com?ref=griesel)
 
 ## What It Does
 
@@ -53,7 +53,7 @@ Send live sensor data (like CO2, temperature, humidity, and more) to a TRMNL E-I
 
 After a restart of Home Assistant, this integration is configurable by via
 1. `Add Integration` at `Devices & Services` like any core integration.
-1. Select `TRMNL Weather Station` and follow the instructions. 
+1. Select `TRMNL Weather Station` and follow the instructions.
 1. The `TRMNL Webhook URL` field is the `Webhook URL` you copied earlier.
 
 [![Open your Home Assistant instance and start setting up this integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=trmnl_weather_station)
