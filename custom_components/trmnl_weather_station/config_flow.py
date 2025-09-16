@@ -121,29 +121,39 @@ def create_basic_schema(defaults: dict = None) -> vol.Schema:
     schema_dict = {
         vol.Required(CONF_URL, default=defaults.get(CONF_URL, DEFAULT_URL)): str,
     }
-    
+
     # Handle CO2 sensor similar to additional sensors
     co2_default = defaults.get(CONF_CO2_SENSOR)
     if co2_default and co2_default.strip():
-        schema_dict[vol.Optional(CONF_CO2_SENSOR, default=co2_default)] = EntitySelector(EntitySelectorConfig(filter=co2_filter))
+        schema_dict[
+            vol.Optional(CONF_CO2_SENSOR, default=co2_default)
+        ] = EntitySelector(EntitySelectorConfig(filter=co2_filter))
     else:
-        schema_dict[vol.Optional(CONF_CO2_SENSOR)] = EntitySelector(EntitySelectorConfig(filter=co2_filter))
-    
-    schema_dict.update({
-        vol.Optional(CONF_CO2_NAME, default=defaults.get(CONF_CO2_NAME, "CO2")): str,
-        vol.Optional(
-            CONF_UPDATE_INTERVAL_MINUTES,
-            default=defaults.get(CONF_UPDATE_INTERVAL_MINUTES, DEFAULT_UPDATE_INTERVAL),
-        ): NumberSelector(
-            NumberSelectorConfig(
-                min=MIN_UPDATE_INTERVAL,
-                max=MAX_UPDATE_INTERVAL,
-                step=5,
-                unit_of_measurement="minutes",
-                mode=NumberSelectorMode.SLIDER,
-            )
-        ),
-    })
+        schema_dict[vol.Optional(CONF_CO2_SENSOR)] = EntitySelector(
+            EntitySelectorConfig(filter=co2_filter)
+        )
+
+    schema_dict.update(
+        {
+            vol.Optional(
+                CONF_CO2_NAME, default=defaults.get(CONF_CO2_NAME, "CO2")
+            ): str,
+            vol.Optional(
+                CONF_UPDATE_INTERVAL_MINUTES,
+                default=defaults.get(
+                    CONF_UPDATE_INTERVAL_MINUTES, DEFAULT_UPDATE_INTERVAL
+                ),
+            ): NumberSelector(
+                NumberSelectorConfig(
+                    min=MIN_UPDATE_INTERVAL,
+                    max=MAX_UPDATE_INTERVAL,
+                    step=5,
+                    unit_of_measurement="minutes",
+                    mode=NumberSelectorMode.SLIDER,
+                )
+            ),
+        }
+    )
 
     return vol.Schema(schema_dict)
 
@@ -167,9 +177,13 @@ def create_sensors_schema(defaults: dict = None) -> vol.Schema:
     # Handle weather provider similar to other sensors
     weather_default = defaults.get(CONF_WEATHER_PROVIDER)
     if weather_default and weather_default.strip():
-        schema_dict[vol.Optional(CONF_WEATHER_PROVIDER, default=weather_default)] = EntitySelector(EntitySelectorConfig(filter=weather_filter))
+        schema_dict[
+            vol.Optional(CONF_WEATHER_PROVIDER, default=weather_default)
+        ] = EntitySelector(EntitySelectorConfig(filter=weather_filter))
     else:
-        schema_dict[vol.Optional(CONF_WEATHER_PROVIDER)] = EntitySelector(EntitySelectorConfig(filter=weather_filter))
+        schema_dict[vol.Optional(CONF_WEATHER_PROVIDER)] = EntitySelector(
+            EntitySelectorConfig(filter=weather_filter)
+        )
 
     sensor_configs = [
         (CONF_SENSOR_1, CONF_SENSOR_1_NAME),
@@ -220,7 +234,9 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, str]:
     if data.get(CONF_WEATHER_PROVIDER):
         weather_state = hass.states.get(data[CONF_WEATHER_PROVIDER])
         if not weather_state:
-            raise InvalidEntity(f"Weather provider {data[CONF_WEATHER_PROVIDER]} not found")
+            raise InvalidEntity(
+                f"Weather provider {data[CONF_WEATHER_PROVIDER]} not found"
+            )
 
     sensor_keys = [
         CONF_SENSOR_1,
@@ -447,22 +463,32 @@ class TrmnlWeatherOptionsFlowHandler(config_entries.OptionsFlow):
         schema_dict = {
             vol.Required(CONF_URL, default=defaults.get(CONF_URL, DEFAULT_URL)): str,
         }
-        
+
         # Handle CO2 sensor similar to other sensors in options
         co2_default = defaults.get(CONF_CO2_SENSOR)
         if co2_default and co2_default.strip() and co2_default != "None":
-            schema_dict[vol.Optional(CONF_CO2_SENSOR, default=co2_default)] = EntitySelector(EntitySelectorConfig(filter=co2_filter))
+            schema_dict[
+                vol.Optional(CONF_CO2_SENSOR, default=co2_default)
+            ] = EntitySelector(EntitySelectorConfig(filter=co2_filter))
         else:
-            schema_dict[vol.Optional(CONF_CO2_SENSOR)] = EntitySelector(EntitySelectorConfig(filter=co2_filter))
-            
-        schema_dict[vol.Optional(CONF_CO2_NAME, default=defaults.get(CONF_CO2_NAME, "CO2"))] = str
+            schema_dict[vol.Optional(CONF_CO2_SENSOR)] = EntitySelector(
+                EntitySelectorConfig(filter=co2_filter)
+            )
+
+        schema_dict[
+            vol.Optional(CONF_CO2_NAME, default=defaults.get(CONF_CO2_NAME, "CO2"))
+        ] = str
 
         # Weather provider - handle similar to other sensors
         weather_default = defaults.get(CONF_WEATHER_PROVIDER)
         if weather_default and weather_default.strip() and weather_default != "None":
-            schema_dict[vol.Optional(CONF_WEATHER_PROVIDER, default=weather_default)] = EntitySelector(EntitySelectorConfig(filter=weather_filter))
+            schema_dict[
+                vol.Optional(CONF_WEATHER_PROVIDER, default=weather_default)
+            ] = EntitySelector(EntitySelectorConfig(filter=weather_filter))
         else:
-            schema_dict[vol.Optional(CONF_WEATHER_PROVIDER)] = EntitySelector(EntitySelectorConfig(filter=weather_filter))
+            schema_dict[vol.Optional(CONF_WEATHER_PROVIDER)] = EntitySelector(
+                EntitySelectorConfig(filter=weather_filter)
+            )
 
         # Sensor configuration fields
         sensor_configs = [

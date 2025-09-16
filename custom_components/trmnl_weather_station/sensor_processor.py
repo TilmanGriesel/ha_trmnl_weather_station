@@ -109,7 +109,9 @@ class SensorProcessor:
                     weather_code,
                 )
             else:
-                _LOGGER.warning("Weather provider %s not found", current_weather_provider)
+                _LOGGER.warning(
+                    "Weather provider %s not found", current_weather_provider
+                )
 
         additional_sensors = [
             (current_sensor_1, current_sensor_1_name, "sensor_1"),
