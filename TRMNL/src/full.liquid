@@ -1,3 +1,19 @@
+<!--
+Home Assistant TRMNL Weather Station v0.6.0
+
+- GitHub: https://github.com/TilmanGriesel/ha_trmnl_weather_station
+- License: MIT License
+
+Changelog:
+- v0.6.0: Fixed TRMNL framework layout structure for proper label/value alignment
+- v0.5.1: Weather integration improvements, dev tools enhancement, HACS release preparation
+- v0.5.0: Added weather provider entity integration with weather icons in CO2 gauge section
+- v0.4.0: Expanded sensor support (up to 6 sensors), configurable update rates, new sensor types, entity icon attributes
+- v0.3.2: Updated TRMNL recipe setup instructions, refactored code into logic modules
+- v0.3.1: Fixed label positioning above sensor values, enhanced font-weight for values, updated shared template with icon mapping
+- v0.3.0: Initial release - First official version with basic weather station and CO₂ indicator functionality
+-->
+
 <style>
   .trmnl .view--half_vertical::before {
     background: none;
@@ -49,11 +65,11 @@
       {% endfor %}
       {% endif %}
       <div class="item pb--8">
-        <span class="label">
-          <span class="mdi {{ entity_icon }}"</span>
-          {{ entity.n }}
-        </span>
         <div class="content">
+          <span class="label">
+            <span class="mdi {{ entity_icon }}"></span>
+            {{ entity.n }}
+          </span>
           <span class="value value--tnums sensor-value" data-value-fit="true">
             {%- if entity.val == "unavailable" -%}
             -
@@ -70,7 +86,7 @@
 </div>
 
 <script type="text/javascript">
-  function createCO2Gauge(level, maxWidth) {    
+  function createCO2Gauge(level, maxWidth) {
     Highcharts.chart('co2-gauge', {
       chart: {
         type: "gauge",
